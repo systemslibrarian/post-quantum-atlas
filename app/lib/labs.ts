@@ -34,6 +34,12 @@ export const labs: Record<string, Lab> = {
     href: "/atlas/tls-theater",
     blurb: "Step through a TLS 1.3 handshake with a quantum attacker.",
   },
+  "timeline": {
+    id: "timeline",
+    title: "Threat Timeline",
+    href: "/atlas/timeline",
+    blurb: "Scrub a cursor through 2020–2040 and watch milestones light up.",
+  },
 };
 
 // moduleId/lessonId -> related lab ids
@@ -45,6 +51,9 @@ export const lessonLabs: Record<string, string[]> = {
   "pqc-solutions/ml-kem": ["toolkit", "tls-theater"],
   "pqc-solutions/ml-dsa": ["toolkit"],
   "transition/hybrid-strategy": ["tls-theater", "toolkit"],
+  "quantum-threat/hardware-timeline": ["timeline"],
+  "transition/global-regulation": ["timeline"],
+  "transition/nist-process": ["timeline", "toolkit"],
 };
 
 // lab id -> related lessons (rendered as 'back to the source' on lab pages later)
@@ -63,6 +72,11 @@ export const labLessons: Record<string, { moduleId: string; lessonId: string }[]
   "tls-theater": [
     { moduleId: "modern-crypto", lessonId: "tls-certificates" },
     { moduleId: "transition", lessonId: "hybrid-strategy" },
+  ],
+  "timeline": [
+    { moduleId: "quantum-threat", lessonId: "hardware-timeline" },
+    { moduleId: "transition", lessonId: "global-regulation" },
+    { moduleId: "transition", lessonId: "nist-process" },
   ],
 };
 

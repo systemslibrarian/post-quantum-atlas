@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import {
-  ChevronLeft, ChevronRight, Layers, Sliders, Cable,
+  ChevronRight, Layers, Sliders, Cable,
   Orbit, Activity, ShieldOff, Map
 } from "lucide-react";
 import FamilyMap from "../components/FamilyMap";
 import SourceFooter from "../components/SourceFooter";
+import Ticker from "../components/Ticker";
 
 interface Lab {
   id: string;
@@ -67,26 +68,17 @@ const labs: Lab[] = [
     id: "threat-timeline",
     title: "Threat Timeline",
     subtitle: "The collapsing estimates",
-    description: "Resource estimates for breaking RSA-2048 dropped 20× in six years. See the curve and where we are now.",
+    description: "Twenty years of research, ten years of deadlines. Scrub a cursor through 2020–2040 and watch the milestones light up.",
     icon: Activity,
-    status: "coming-soon",
+    href: "/atlas/timeline",
+    status: "live",
   },
 ];
 
 export default function AtlasIndex() {
   return (
     <div className="min-h-screen">
-      <header className="border-b border-[var(--color-border-subtle)]">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors">
-            <ChevronLeft size={16} />
-            Home
-          </Link>
-          <span className="font-[family-name:var(--font-display)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
-            Atlas
-          </span>
-        </div>
-      </header>
+      <Ticker />
 
       <main id="main">
       <section className="max-w-6xl mx-auto px-6 pt-12 sm:pt-16 pb-10">

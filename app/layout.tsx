@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import CommandPalette from "./components/CommandPalette";
+import MuseumNav from "./components/MuseumNav";
+import Breadcrumbs from "./components/Breadcrumbs";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://systemslibrarian.github.io/post-quantum-atlas/"),
@@ -46,6 +48,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         <div className="mesh-bg" />
+        <MuseumNav />
+        <Breadcrumbs />
         {children}
         <CommandPalette />
       </body>

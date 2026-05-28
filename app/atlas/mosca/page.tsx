@@ -39,18 +39,6 @@ export default function MoscaPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-[var(--color-border-subtle)]">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/atlas" className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors">
-            <ChevronLeft size={16} />
-            Atlas
-          </Link>
-          <span className="font-[family-name:var(--font-display)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
-            Lab · Mosca&rsquo;s inequality
-          </span>
-        </div>
-      </header>
-
       <main id="main">
         <section className="max-w-5xl mx-auto px-6 pt-10 sm:pt-12 pb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/20 text-[var(--color-warning)] text-xs font-[family-name:var(--font-display)] font-medium mb-4">

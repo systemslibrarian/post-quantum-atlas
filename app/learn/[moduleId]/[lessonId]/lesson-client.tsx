@@ -141,36 +141,23 @@ export default function LessonClient({ params }: { params: Promise<{ moduleId: s
 
   return (
     <div className="min-h-screen">
-      {/* Top bar */}
-      <header className="sticky top-0 z-50 border-b border-[var(--color-border-subtle)] bg-[var(--color-surface)]/90 backdrop-blur-md">
-        <div className="max-w-3xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link
-            href={`/learn/${moduleId}`}
-            className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors"
-          >
-            <ChevronLeft size={16} />
-            <span className="hidden sm:inline">{mod.title}</span>
-            <span className="sm:hidden">Back</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-[var(--color-text-muted)] font-[family-name:var(--font-mono)]">
-              {globalIdx + 1}/{total}
-            </span>
-            <div className="w-16 h-1 bg-[var(--color-surface-raised)] rounded-full overflow-hidden">
-              <div
-                className="progress-fill h-full bg-[var(--color-quantum)] rounded-full"
-                style={{ width: `${((globalIdx + 1) / total) * 100}%` }}
-              />
-            </div>
+      {/* Lesson progress strip — small, sits below the global breadcrumbs */}
+      <div className="border-b border-[var(--color-border-subtle)]/50">
+        <div className="max-w-3xl mx-auto px-6 py-2 flex items-center justify-end gap-3">
+          <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)]">
+            Exhibit {globalIdx + 1} of {total}
+          </span>
+          <div className="w-20 h-1 bg-[var(--color-surface-raised)] rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(((globalIdx + 1) / total) * 100)} aria-valuemin={0} aria-valuemax={100} aria-label="Exhibit progress">
+            <div className="progress-fill h-full bg-[var(--color-quantum)] rounded-full" style={{ width: `${((globalIdx + 1) / total) * 100}%` }} />
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Lesson content */}
-      <article className="max-w-3xl mx-auto px-6 pt-12 pb-8">
+      <article className="max-w-3xl mx-auto px-6 pt-8 sm:pt-10 pb-8">
         <div className="animate-fade-up" style={{ animationDelay: "0ms" }}>
           <span className="text-xs font-[family-name:var(--font-display)] font-semibold uppercase tracking-wider text-[var(--color-quantum)] mb-2 block">
-            Module {mod.order} &middot; Lesson {lesson.order}
+            Hall {mod.order} &middot; Exhibit {lesson.order}
           </span>
           <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold tracking-tight mb-2">
             {lesson.title}

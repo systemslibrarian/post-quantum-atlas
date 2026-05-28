@@ -6,9 +6,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   Shield, Globe, Atom, Lock, ArrowRightLeft, Rocket,
-  ChevronRight, BookOpen, GraduationCap, Map
+  ChevronRight, BookOpen, GraduationCap, Map, Landmark, ExternalLink
 } from "lucide-react";
 import SourceFooter from "./components/SourceFooter";
+import Ticker from "./components/Ticker";
+import SonarHero from "./components/SonarHero";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
   Shield, Globe, Atom, Lock, ArrowRightLeft, Rocket,
@@ -35,76 +37,86 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-[var(--color-border-subtle)]">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[var(--color-quantum)]/20 flex items-center justify-center">
-              <Lock size={16} className="text-[var(--color-quantum)]" />
-            </div>
-            <span className="font-[family-name:var(--font-display)] font-semibold text-sm tracking-wide uppercase text-[var(--color-text-secondary)]">
-              PQC Learning Path
-            </span>
-          </div>
-          <div className="flex items-center gap-3 sm:gap-4 text-sm text-[var(--color-text-muted)]">
-            <Link href="/atlas" className="flex items-center gap-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">
-              <Map size={14} aria-hidden="true" />
-              Atlas
-            </Link>
-            <span className="hidden sm:inline" aria-label={`${completed.length} of ${total} lessons completed`}>
-              {completed.length}/{total} lessons
-            </span>
-            <div className="w-16 sm:w-24 h-1.5 bg-[var(--color-surface-raised)] rounded-full overflow-hidden" role="progressbar" aria-valuenow={overallPct} aria-valuemin={0} aria-valuemax={100} aria-label="Overall progress">
-              <div className="progress-fill h-full bg-[var(--color-safe)] rounded-full" style={{ width: `${overallPct}%` }} />
-            </div>
-          </div>
-        </div>
-      </header>
+      <Ticker />
 
       <main id="main">
-      <section className="max-w-6xl mx-auto px-6 pt-12 sm:pt-16 pb-10 sm:pb-12">
-        <div className="animate-fade-up" style={{ animationDelay: "0ms" }}>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-quantum)]/10 border border-[var(--color-quantum)]/20 text-[var(--color-quantum)] text-xs font-[family-name:var(--font-display)] font-medium mb-6">
-            <GraduationCap size={14} />
-            Interactive Learning Experience
+      <section className="max-w-6xl mx-auto px-6 pt-10 sm:pt-16 pb-10 sm:pb-12">
+        <div className="grid md:grid-cols-[1fr_auto] gap-8 md:gap-12 items-center">
+          <div>
+            <div className="animate-fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-quantum)]/10 border border-[var(--color-quantum)]/20 text-[var(--color-quantum)] text-xs font-[family-name:var(--font-display)] font-medium mb-6" style={{ animationDelay: "0ms" }}>
+              <Atom size={14} aria-hidden="true" />
+              The future wing
+            </div>
+            <h1 className="animate-fade-up font-[family-name:var(--font-display)] text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-4" style={{ animationDelay: "80ms" }}>
+              Post-Quantum<br />
+              <span className="text-[var(--color-quantum)]">Cryptography</span>
+            </h1>
+            <p className="animate-fade-up text-lg md:text-xl text-[var(--color-text-secondary)] max-w-xl leading-relaxed mb-4" style={{ animationDelay: "160ms" }}>
+              {modules.length} halls. {total} exhibits. A guided path from cryptographic foundations
+              to the math protecting tomorrow&rsquo;s internet.
+            </p>
+            <p className="animate-fade-up text-sm text-[var(--color-text-muted)] mb-6" style={{ animationDelay: "200ms" }}>
+              Companion to <em>&ldquo;From Caesar to Post-Quantum&rdquo;</em> &mdash; Code4Lib Journal.
+              Sibling to the{" "}
+              <a href="https://github.com/systemslibrarian/cipher-museum" className="underline hover:text-[var(--color-text-secondary)]" target="_blank" rel="noopener noreferrer">
+                Cipher Museum<ExternalLink size={11} className="inline align-baseline ml-0.5" aria-hidden="true" />
+              </a>.
+            </p>
+            <div className="animate-fade-up flex items-center gap-3 text-xs text-[var(--color-text-muted)]" style={{ animationDelay: "240ms" }}>
+              <span aria-label={`${completed.length} of ${total} exhibits visited`}>
+                {completed.length} / {total} exhibits visited
+              </span>
+              <div className="w-24 h-1.5 bg-[var(--color-surface-raised)] rounded-full overflow-hidden" role="progressbar" aria-valuenow={overallPct} aria-valuemin={0} aria-valuemax={100} aria-label="Overall progress">
+                <div className="progress-fill h-full bg-[var(--color-safe)] rounded-full" style={{ width: `${overallPct}%` }} />
+              </div>
+              <span className="font-[family-name:var(--font-mono)]">{overallPct}%</span>
+            </div>
+          </div>
+          <div className="hidden md:block animate-fade-up" style={{ animationDelay: "180ms" }}>
+            <SonarHero size={320} />
           </div>
         </div>
-        <h1 className="animate-fade-up font-[family-name:var(--font-display)] text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-tight mb-4" style={{ animationDelay: "80ms" }}>
-          Post-Quantum<br />
-          <span className="text-[var(--color-quantum)]">Cryptography</span>
-        </h1>
-        <p className="animate-fade-up text-lg md:text-xl text-[var(--color-text-secondary)] max-w-2xl leading-relaxed mb-4" style={{ animationDelay: "160ms" }}>
-          A guided path from cryptographic foundations to real-world PQC deployment.
-          {" "}{modules.length} modules. {total} lessons. One clear progression.
-        </p>
-        <p className="animate-fade-up text-sm text-[var(--color-text-muted)] mb-10" style={{ animationDelay: "200ms" }}>
-          Companion to{" "}
-          <em>&ldquo;From Caesar to Post-Quantum: Building a Three-Tier Cryptography Education Portfolio&rdquo;</em>
-          {" "}&mdash; Code4Lib Journal
-        </p>
       </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-10">
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="p-5 rounded-2xl border border-[var(--color-quantum)]/20 bg-[var(--color-quantum)]/[0.04]">
+          <Link
+            href="/learn/foundations"
+            className="block p-5 rounded-2xl border border-[var(--color-quantum)]/20 bg-[var(--color-quantum)]/[0.04] hover:bg-[var(--color-quantum)]/[0.08] hover:border-[var(--color-quantum)]/40 transition-colors group"
+          >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[var(--color-quantum)] font-[family-name:var(--font-display)] mb-2">
-              <GraduationCap size={14} /> Follow the path
+              <GraduationCap size={14} aria-hidden="true" /> Walk the halls
             </div>
-            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-              {modules.length} modules in order. Foundations → quantum threat → PQC → deployment. Track your progress as you go.
+            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed flex items-start justify-between gap-2">
+              <span>{modules.length} halls in order. Foundations → quantum threat → PQC → deployment.</span>
+              <ChevronRight size={16} className="flex-shrink-0 text-[var(--color-quantum)] group-hover:translate-x-0.5 transition-transform mt-0.5" />
             </p>
-          </div>
+          </Link>
           <Link
             href="/atlas"
             className="block p-5 rounded-2xl border border-[var(--color-accent)]/20 bg-[var(--color-accent)]/[0.04] hover:bg-[var(--color-accent)]/[0.08] hover:border-[var(--color-accent)]/40 transition-colors group"
           >
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[var(--color-accent)] font-[family-name:var(--font-display)] mb-2">
-              <Map size={14} /> Explore the atlas
+              <Map size={14} aria-hidden="true" /> Open the atlas
             </div>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed flex items-start justify-between gap-2">
-              <span>Interactive labs: algorithm cards, the breaks-vs-survives map, Mosca&rsquo;s inequality, and more.</span>
+              <span>Five interactive labs: algorithm cards, the breaks-vs-survives map, Mosca&rsquo;s slider, TLS theater, and the threat timeline.</span>
               <ChevronRight size={16} className="flex-shrink-0 text-[var(--color-accent)] group-hover:translate-x-0.5 transition-transform mt-0.5" />
             </p>
           </Link>
+        </div>
+
+        <div className="mt-4 p-4 rounded-2xl border border-[var(--color-warning)]/20 bg-[var(--color-warning)]/[0.04] flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[var(--color-warning)] font-[family-name:var(--font-display)] flex-shrink-0">
+            <Landmark size={14} aria-hidden="true" /> Sibling exhibit
+          </div>
+          <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed flex-1">
+            Looking for where cryptography came <em>from</em>? Visit the{" "}
+            <a href="https://github.com/systemslibrarian/cipher-museum" className="text-[var(--color-warning)] hover:underline font-medium" target="_blank" rel="noopener noreferrer">
+              Cipher Museum<ExternalLink size={11} className="inline align-baseline ml-0.5" aria-hidden="true" />
+            </a>{" "}
+            — Caesar to Enigma, 140 ciphers, walked the same way.
+          </p>
         </div>
       </section>
 
@@ -127,7 +139,7 @@ export default function Home() {
                     <Icon size={22} className={colors.text} />
                   </div>
                   <span className="font-[family-name:var(--font-display)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
-                    Module {mod.order}
+                    Hall {mod.order}
                   </span>
                 </div>
                 <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mb-1 group-hover:text-[var(--color-text-primary)] transition-colors">
@@ -138,8 +150,8 @@ export default function Home() {
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-                    <BookOpen size={13} />
-                    {mod.lessons.length} lessons
+                    <BookOpen size={13} aria-hidden="true" />
+                    {mod.lessons.length} exhibits
                   </div>
                   <div className="flex items-center gap-2">
                     {pct > 0 && (

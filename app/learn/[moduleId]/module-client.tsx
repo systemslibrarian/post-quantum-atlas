@@ -27,21 +27,9 @@ export default function ModuleClient({ params }: { params: Promise<{ moduleId: s
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-[var(--color-border-subtle)]">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors">
-            <ChevronLeft size={16} />
-            All Modules
-          </Link>
-          <span className="font-[family-name:var(--font-display)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
-            Module {mod.order} of {modules.length}
-          </span>
-        </div>
-      </header>
-
-      <section className="max-w-4xl mx-auto px-6 pt-12 pb-8">
+      <section className="max-w-4xl mx-auto px-6 pt-10 sm:pt-12 pb-8">
         <span className="text-xs font-[family-name:var(--font-display)] font-semibold uppercase tracking-wider text-[var(--color-quantum)] mb-3 block">
-          Module {mod.order}
+          Hall {mod.order} of {modules.length}
         </span>
         <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">
           {mod.title}
@@ -51,8 +39,8 @@ export default function ModuleClient({ params }: { params: Promise<{ moduleId: s
         </p>
         <div className="flex items-center gap-4 mb-8">
           <div className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
-            <BookOpen size={15} />
-            {mod.lessons.length} lessons
+            <BookOpen size={15} aria-hidden="true" />
+            {mod.lessons.length} exhibits
           </div>
           {pct > 0 && (
             <div className="flex items-center gap-2">

@@ -29,7 +29,7 @@ function buildCorpus(): Hit[] {
       id: `module:${m.id}`,
       kind: "module",
       title: m.title,
-      subtitle: `Module ${m.order} · ${m.lessons.length} lessons`,
+      subtitle: `Hall ${m.order} · ${m.lessons.length} exhibits`,
       href: `/learn/${m.id}`,
       searchKey: `${m.title} ${m.subtitle} ${m.description}`,
     });
@@ -79,8 +79,8 @@ const kindIcon = {
 } as const;
 
 const kindLabel = {
-  module: "Module",
-  lesson: "Lesson",
+  module: "Hall",
+  lesson: "Exhibit",
   lab: "Lab",
   algorithm: "Algorithm",
   page: "Page",

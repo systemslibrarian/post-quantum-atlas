@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ChevronLeft, BookOpen, Map, GraduationCap, ExternalLink } from "lucide-react";
+import { BookOpen, Map, GraduationCap, ExternalLink } from "lucide-react";
 import { REFDOC_VERSION, REFDOC_DATE } from "../components/SourceFooter";
 
 export const metadata: Metadata = {
@@ -11,18 +11,6 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="min-h-screen">
-      <header className="border-b border-[var(--color-border-subtle)]">
-        <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors">
-            <ChevronLeft size={16} />
-            Home
-          </Link>
-          <span className="font-[family-name:var(--font-display)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
-            About
-          </span>
-        </div>
-      </header>
-
       <main id="main" className="max-w-3xl mx-auto px-6 pt-10 sm:pt-12 pb-16">
         <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
           About the Atlas
@@ -32,9 +20,10 @@ export default function AboutPage() {
           It started as a single reference document and grew into a navigable map of the transition.
         </p>
 
-        <Section heading="Two ways to use it" icon={<GraduationCap size={18} />}>
-          <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Follow the path.</strong> Six modules, twenty-one lessons, in order, with progress tracked in your browser.</p>
-          <p><strong className="text-[var(--color-text-primary)]">Explore the atlas.</strong> A growing set of self-contained labs — algorithm cards, the impact map, Mosca&rsquo;s slider, the TLS handshake theater — each rendering one part of the story in a hands-on way.</p>
+        <Section heading="Three ways to use it" icon={<GraduationCap size={18} />}>
+          <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Walk the halls.</strong> Six halls, twenty-one exhibits, in order, with progress tracked in your browser.</p>
+          <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Open the atlas.</strong> Five interactive labs — algorithm cards, the impact map, Mosca&rsquo;s slider, the TLS handshake theater, and the collapsing threat timeline — each rendering one part of the story in a hands-on way.</p>
+          <p><strong className="text-[var(--color-text-primary)]">Take the challenges.</strong> Five short puzzles to see whether the math landed. Solved badges live in your browser.</p>
         </Section>
 
         <Section heading="Where the facts come from" icon={<BookOpen size={18} />}>

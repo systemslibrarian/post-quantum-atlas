@@ -32,18 +32,6 @@ export default function BreaksSurvivesPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-[var(--color-border-subtle)]">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/atlas" className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors">
-            <ChevronLeft size={16} />
-            Atlas
-          </Link>
-          <span className="font-[family-name:var(--font-display)] text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
-            Lab · Impact map
-          </span>
-        </div>
-      </header>
-
       <main id="main">
         <section className="max-w-6xl mx-auto px-6 pt-10 sm:pt-12 pb-6">
           <h1 className="animate-fade-up font-[family-name:var(--font-display)] text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
