@@ -6,9 +6,25 @@ export interface Lesson {
   title: string;
   subtitle: string;
   order: number;
+  facts?: LessonFact[];        // scannable "artifact card" shown at the top
   sections: ContentSection[];
   keyTakeaways: string[];
   sources?: Source[];
+}
+
+// A single label/value pair in a lesson's top "exhibit fact card".
+export interface LessonFact {
+  label: string;
+  value: string;
+}
+
+// A titled concept card — renders what used to be prose bullets as a scannable
+// visual grid (the museum-exhibit feel).
+export interface ConceptCard {
+  title: string;
+  body: string;
+  icon?: string;               // lucide icon name
+  tone?: "quantum" | "accent" | "safe" | "warning" | "danger";
 }
 
 export interface Source {
@@ -21,6 +37,7 @@ export interface ContentSection {
   heading?: string;
   paragraphs?: string[];
   bullets?: string[];
+  cards?: ConceptCard[];       // titled cards rendered as a grid
   table?: TableData;
   callout?: { type: "warning" | "info" | "key-concept"; text: string };
   diagram?: { id: string; caption?: string };
@@ -70,6 +87,12 @@ export const modules: Module[] = [
         title: "Why Cryptography Matters",
         subtitle: "The CIA Triad and Kerckhoffs's Principle",
         order: 1,
+        facts: [
+          { label: "Solves", value: "Confidentiality · Integrity · Authentication" },
+          { label: "Core principle", value: "Kerckhoffs's — security lives in the key" },
+          { label: "Formalized", value: "1883, by Auguste Kerckhoffs" },
+          { label: "Golden rule", value: "Never invent your own crypto" },
+        ],
         keyTakeaways: [
           "Cryptography solves three problems: confidentiality, integrity, and authentication (the CIA Triad)",
           "Kerckhoffs's Principle: security must depend on the key, not the secrecy of the algorithm",
@@ -78,26 +101,25 @@ export const modules: Module[] = [
         sections: [
           {
             paragraphs: [
-              "Cryptography is the invisible infrastructure of the modern digital world. It is the science that allows us to build trust in an untrusted environment. Without it, the internet would be a digital library — useful for reading public information, but impossible for banking, shopping, or private conversation."
+              "Cryptography is the invisible infrastructure of the digital world — the science that lets us build trust in an untrusted environment. Without it the internet could host public reading material, but never banking, shopping, or private conversation."
             ]
           },
           {
             heading: "The CIA Triad",
             paragraphs: [
-              "Modern cryptography is not simply the art of hiding messages. It is a toolbox used to solve three specific problems, known as the CIA Triad:"
+              "Cryptography isn't just hiding messages. It's a toolbox for three specific problems:"
             ],
-            bullets: [
-              "Confidentiality (Secrecy): Ensure that information is accessible only to those authorized to have access. The analogy is a sealed envelope — the mail carrier handles it, but cannot read the contents.",
-              "Integrity (Tamper-Proofing): Ensure that data has not been changed or corrupted during transit. The analogy is a wax seal — if the seal is broken, the recipient knows someone tampered with the message.",
-              "Authentication (Identity): Confirm the identity of the person or system you are communicating with. The analogy is a signature or passport — a mathematical way to prove origin."
+            cards: [
+              { title: "Confidentiality", body: "Only authorized parties can read the data — a sealed envelope the carrier delivers but can't open.", icon: "Lock", tone: "accent" },
+              { title: "Integrity", body: "The data hasn't been altered in transit — a wax seal that shows if anyone tampered with it.", icon: "ShieldCheck", tone: "safe" },
+              { title: "Authentication", body: "You can prove who you're talking to — a signature or passport, origin made mathematically verifiable.", icon: "Fingerprint", tone: "quantum" },
             ],
             diagram: { id: "cia-triad", caption: "Three problems, three families of tools. Trust is where they overlap." }
           },
           {
             heading: "Kerckhoffs's Principle",
             paragraphs: [
-              "In 1883, Dutch cryptographer Auguste Kerckhoffs formulated a principle that defines modern security: a cryptosystem should be secure even if everything about the system, except the key, is public knowledge.",
-              "The algorithms used to secure bank accounts (AES, RSA) are publicly available and open-source. Security lies entirely in the key — a specific string of random numbers — not in the secrecy of the algorithm. Because algorithms are public, thousands of mathematicians try to break them every day; surviving this scrutiny is what earns trust."
+              "In 1883 Auguste Kerckhoffs set the rule modern security still follows: a system must stay secure even if everything about it except the key is public. AES and RSA are open-source — the secrecy lives entirely in the key. Because the algorithms are public, thousands of mathematicians attack them daily, and surviving that scrutiny is what earns trust."
             ],
             callout: { type: "key-concept", text: "Never invent your own cryptography. Always use standard, public, peer-reviewed algorithms." }
           }
