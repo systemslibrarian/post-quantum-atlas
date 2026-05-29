@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { BookOpen, Map, GraduationCap, ExternalLink } from "lucide-react";
 import { REFDOC_VERSION, REFDOC_DATE } from "../components/SourceFooter";
+import TourButton from "../components/TourButton";
 
 export const metadata: Metadata = {
   title: "About",
@@ -70,6 +71,11 @@ export default function AboutPage() {
         <Section heading="Author">
           <p className="mb-1">Paul Clark — IT Librarian &amp; Application Systems Analyst, Leon County Public Library, Tallahassee FL.</p>
           <p className="text-[var(--color-text-muted)] text-sm">paul@systemslibrarian.dev · github.com/systemslibrarian</p>
+        </Section>
+
+        <Section heading="Tour">
+          <p className="mb-2">First time here? Replay the sixty-second guided tour.</p>
+          <TourButton />
         </Section>
 
         <p className="mt-12 text-xs italic text-[var(--color-text-muted)]/70 text-center">

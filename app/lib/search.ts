@@ -26,6 +26,60 @@ export const kindLabel: Record<HitKind, string> = {
   page: "Page",
 };
 
+// Synonym and intent expansion. Keys are normalized lowercase phrases the
+// user might type; values are extra tokens injected into the query before ranking.
+const synonyms: Record<string, string[]> = {
+  // Algorithm aliases
+  "kyber":          ["ml-kem"],
+  "dilithium":      ["ml-dsa"],
+  "sphincs":        ["slh-dsa"],
+  "sphincs+":       ["slh-dsa"],
+  "falcon":         ["fn-dsa"],
+  "mceliece":       ["classic mceliece"],
+  // Regulator + framework intent
+  "cnsa":           ["cnsa 2.0", "ml-dsa-87", "ml-kem-1024", "transition"],
+  "cnsa 2":         ["cnsa 2.0", "ml-dsa-87", "ml-kem-1024"],
+  "cnsa 2.0":       ["ml-dsa-87", "ml-kem-1024"],
+  "deadline":       ["2030", "2035", "transition", "global regulation", "cnsa"],
+  "deadlines":      ["2030", "2035", "transition", "global regulation"],
+  "nist":           ["fips 203", "fips 204", "fips 205", "standardization"],
+  "fips":           ["fips 203", "fips 204", "fips 205"],
+  "fips 203":       ["ml-kem"],
+  "fips 204":       ["ml-dsa"],
+  "fips 205":       ["slh-dsa"],
+  "fips 206":       ["fn-dsa", "falcon"],
+  "nis2":           ["regulation", "european union", "transition"],
+  // Practitioner intent
+  "what replaces ecdsa":       ["ml-dsa", "slh-dsa", "ecdsa"],
+  "what replaces rsa":         ["ml-kem", "ml-dsa", "rsa"],
+  "which algorithms survive":  ["breaks-survives", "aes-256", "sha-512"],
+  "what breaks":               ["breaks-survives", "shor", "rsa", "ecc"],
+  "hybrid tls":                ["x-wing", "ml-kem", "x25519", "tls"],
+  "hybrid":                    ["x-wing", "ml-kem", "x25519", "hybrid kem"],
+  "x-wing":                    ["x25519", "ml-kem-768", "hybrid"],
+  "harvest now":               ["store now decrypt later", "mosca", "sndl", "hndl"],
+  "decrypt later":             ["mosca", "harvest now decrypt later"],
+  "sndl":                      ["store now decrypt later", "mosca"],
+  "hndl":                      ["harvest now decrypt later", "mosca"],
+  "quantum threat":            ["shor", "grover", "crqc", "quantum-threat"],
+  "crqc":                      ["quantum threat", "shor"],
+};
+
+function expand(q: string): string {
+  const trimmed = q.trim().toLowerCase();
+  const extras = synonyms[trimmed] ?? [];
+  if (extras.length === 0) {
+    // Per-token expansion: catch single words like "kyber"
+    const tokens = trimmed.split(/\s+/);
+    const perToken: string[] = [];
+    for (const t of tokens) {
+      if (synonyms[t]) perToken.push(...synonyms[t]);
+    }
+    return [trimmed, ...perToken].join(" ");
+  }
+  return [trimmed, ...extras].join(" ");
+}
+
 let cachedCorpus: Hit[] | null = null;
 
 export function corpus(): Hit[] {
@@ -86,12 +140,16 @@ export function corpus(): Hit[] {
   return hits;
 }
 
-/** Rank hits against a query. Returns a copy sorted by score descending, score > 0 only. */
+/** Rank hits against a query. Synonym-aware: known phrases inject extra tokens
+ *  that are OR-matched (any token hit counts). Returns hits sorted by score descending. */
 export function rank(query: string, limit = 25): Hit[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return [];
+  const original = query.trim().toLowerCase();
+  if (!original) return [];
 
-  const tokens = q.split(/\s+/).filter(Boolean);
+  const originalTokens = original.split(/\s+/).filter(Boolean);
+  const expanded = expand(original);
+  const expandedTokens = expanded.split(/\s+/).filter(Boolean);
+
   const scored: { h: Hit; score: number }[] = [];
 
   for (const h of corpus()) {
@@ -100,10 +158,11 @@ export function rank(query: string, limit = 25): Hit[] {
     const keyL = (h.title + " " + h.searchKey).toLowerCase();
 
     let score = 0;
-    let allHit = true;
 
-    for (const t of tokens) {
-      if (!keyL.includes(t)) { allHit = false; break; }
+    // The original tokens are required (AND), the synonym tokens are bonuses (OR).
+    let allOriginalHit = true;
+    for (const t of originalTokens) {
+      if (!keyL.includes(t)) { allOriginalHit = false; break; }
       if (titleL === t) score += 100;
       else if (titleL.startsWith(t)) score += 50;
       else if (titleL.includes(t)) score += 25;
@@ -111,9 +170,29 @@ export function rank(query: string, limit = 25): Hit[] {
       score += 3;
     }
 
-    if (!allHit) continue;
+    if (allOriginalHit) {
+      // Synonym tokens are pure bonuses.
+      for (const t of expandedTokens) {
+        if (originalTokens.includes(t)) continue;
+        if (keyL.includes(t)) {
+          if (titleL.includes(t)) score += 8;
+          else score += 2;
+        }
+      }
+    } else {
+      // Original failed — let strong synonym matches still surface some results.
+      let synHits = 0;
+      for (const t of expandedTokens) {
+        if (originalTokens.includes(t)) continue;
+        if (keyL.includes(t)) {
+          synHits++;
+          if (titleL.includes(t)) score += 12;
+          else score += 4;
+        }
+      }
+      if (synHits < 2) continue; // require at least 2 synonym hits to surface a fallback
+    }
 
-    // Tiny tie-breaker: prefer pages and labs over deep lessons when scores tie.
     if (h.kind === "page" || h.kind === "lab") score += 0.5;
 
     scored.push({ h, score });

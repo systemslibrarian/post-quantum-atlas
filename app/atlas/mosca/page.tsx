@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, AlertTriangle, ShieldCheck, Sliders, RotateCcw } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { ChevronLeft, AlertTriangle, ShieldCheck, Sliders, RotateCcw, FileDown } from "lucide-react";
 import LessonBacklinks from "../../components/LessonBacklinks";
 
 interface Preset {
@@ -21,9 +22,25 @@ const presets: Preset[] = [
 ];
 
 export default function MoscaPage() {
-  const [x, setX] = useState(20);
-  const [y, setY] = useState(5);
-  const [z, setZ] = useState(15);
+  return (
+    <Suspense fallback={null}>
+      <MoscaInner />
+    </Suspense>
+  );
+}
+
+function MoscaInner() {
+  const params = useSearchParams();
+  const presetId = params?.get("preset");
+  const initial = presets.find(p => p.id === presetId);
+
+  const [x, setX] = useState(initial?.x ?? 20);
+  const [y, setY] = useState(initial?.y ?? 5);
+  const [z, setZ] = useState(initial?.z ?? 15);
+
+  useEffect(() => {
+    if (initial) { setX(initial.x); setY(initial.y); setZ(initial.z); }
+  }, [presetId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sum = x + y;
   const failing = sum > z;
@@ -98,12 +115,18 @@ export default function MoscaPage() {
             />
           </div>
 
-          <div className="mt-5 flex items-center gap-2">
+          <div className="mt-5 flex flex-wrap items-center gap-2">
             <button
               onClick={reset}
               className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] px-3 py-1.5 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] transition-colors"
             >
               <RotateCcw size={12} /> Reset
+            </button>
+            <button
+              onClick={() => downloadReport(x, y, z, failing, margin, presetId)}
+              className="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] px-3 py-1.5 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-mid)] transition-colors"
+            >
+              <FileDown size={12} /> Download readiness report
             </button>
           </div>
         </section>
@@ -145,6 +168,55 @@ export default function MoscaPage() {
       </footer>
     </div>
   );
+}
+
+function downloadReport(x: number, y: number, z: number, failing: boolean, margin: number, presetId: string | null | undefined) {
+  const today = new Date().toISOString().slice(0, 10);
+  const preset = presetId ? `Preset: ${presetId}` : "Preset: (custom)";
+  const verdict = failing
+    ? `ALREADY FAILED FOR THIS DATA CLASS.\n  X + Y = ${x + y} years exceeds Z = ${z} years.\n  Anything encrypted today under classical asymmetric crypto is on the table for retroactive decryption.`
+    : `SLACK REMAINING — for now.\n  X + Y = ${x + y} years vs. Z = ${z} years.\n  ${margin} year${margin === 1 ? "" : "s"} of headroom. Plan the migration now; estimates collapse fast.`;
+
+  const body = `POST-QUANTUM ATLAS — MOSCA READINESS REPORT
+Generated ${today}
+
+INPUTS
+  ${preset}
+  X (data secrecy lifetime):   ${x} years
+  Y (migration time):           ${y} years
+  Z (time to CRQC):             ${z} years
+
+VERDICT
+  ${verdict}
+
+WHY THIS MATTERS
+  Mosca's inequality (X + Y > Z) says any data with a secrecy window long enough
+  to outlive its protection has already failed for that data class. Adversaries
+  capable of harvest-now-decrypt-later are recording today.
+
+NEXT STEPS (FRAMEWORK-AGNOSTIC)
+  1. Cryptographic inventory (CBOM) — discover before you migrate.
+  2. Risk-rank data classes by X. Highest first.
+  3. Deploy hybrid KEMs (e.g. X25519 + ML-KEM-768) where feasible.
+  4. Plan signature migration to ML-DSA (or SLH-DSA where hash-based backup matters).
+  5. Track regulator deadlines — most converge on 2030 (critical) and 2035 (full).
+
+PRIMARY REFERENCES
+  • NIST FIPS 203 / 204 / 205 — August 2024
+  • CNSA 2.0 (NSA)
+  • UK NCSC — Migration timelines
+  • EU NIS Cooperation Group roadmap
+
+Sourced from RefDoc.md v3.8 — Post-Quantum Atlas
+https://systemslibrarian.github.io/post-quantum-atlas/
+`;
+  const blob = new Blob([body], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `mosca-readiness-${today}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function Verdict({ failing, margin, sum, z }: { failing: boolean; margin: number; sum: number; z: number }) {

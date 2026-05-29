@@ -33,6 +33,14 @@ export interface Algorithm {
   variants?: string[];     // ML-KEM-512 / 768 / 1024
   refDocAnchor: string;    // section number in RefDoc.md
   tag?: string;            // optional short badge text (e.g., "Primary KEM")
+  codeSamples?: CodeSample[];
+}
+
+export interface CodeSample {
+  language: "bash" | "python" | "javascript" | "rust" | "go";
+  label?: string;          // tab label override (default: language)
+  description?: string;
+  code: string;
 }
 
 export const algorithms: Algorithm[] = [
@@ -56,6 +64,49 @@ export const algorithms: Algorithm[] = [
     variants: ["ML-KEM-512", "ML-KEM-768", "ML-KEM-1024"],
     refDocAnchor: "§10",
     tag: "Primary KEM",
+    codeSamples: [
+      {
+        language: "bash",
+        description: "OpenSSL 3 + oqs-provider hybrid TLS handshake.",
+        code: `# Generate an X-Wing (X25519 + ML-KEM-768) keypair via oqs-provider.
+openssl genpkey -algorithm x25519_mlkem768 -out hybrid.key
+
+# Inspect the resulting key.
+openssl pkey -in hybrid.key -noout -text
+
+# Curl a hybrid-enabled origin.
+curl -v --curves x25519_mlkem768 https://pq.cloudflareresearch.com/`,
+      },
+      {
+        language: "python",
+        description: "Encapsulate / decapsulate ML-KEM-768 with the official liboqs binding.",
+        code: `from oqs import KeyEncapsulation  # pip install oqs
+
+with KeyEncapsulation("ML-KEM-768") as kem:
+    public_key = kem.generate_keypair()
+    # Sender uses the public key to encapsulate a shared secret.
+    ciphertext, shared_send = kem.encap_secret(public_key)
+    # Receiver decapsulates with the same KEM object (holds the private key).
+    shared_recv = kem.decap_secret(ciphertext)
+
+assert shared_send == shared_recv
+print("shared secret bytes:", len(shared_send))  # 32`,
+      },
+      {
+        language: "javascript",
+        description: "Hybrid handshake from Node via the oqs-provider OpenSSL plugin.",
+        code: `import { execSync } from "node:child_process";
+
+// Requires OpenSSL 3 + oqs-provider in your environment.
+const pub = execSync(
+  "openssl genpkey -algorithm x25519_mlkem768 -outform PEM"
+).toString();
+console.log(pub);
+
+// In browsers, prefer your TLS stack's hybrid support (Chrome ships X-Wing).
+// For raw KEM in JS, use \`mlkem\` from @noble/post-quantum.`,
+      },
+    ],
   },
   {
     id: "ml-dsa",
@@ -76,6 +127,49 @@ export const algorithms: Algorithm[] = [
     variants: ["ML-DSA-44", "ML-DSA-65", "ML-DSA-87"],
     refDocAnchor: "§11",
     tag: "Primary signature",
+    codeSamples: [
+      {
+        language: "bash",
+        description: "Generate an ML-DSA-65 keypair and self-sign a test certificate.",
+        code: `# Requires OpenSSL 3 + oqs-provider configured in openssl.cnf.
+openssl req -new -x509 -newkey mldsa65 \\
+  -keyout mldsa65.key -out mldsa65.crt \\
+  -nodes -days 365 \\
+  -subj "/CN=pq-atlas.test"
+
+openssl x509 -in mldsa65.crt -noout -text | grep "Signature Algorithm"`,
+      },
+      {
+        language: "python",
+        description: "Sign and verify with the official liboqs Python binding.",
+        code: `from oqs import Signature  # pip install oqs
+
+message = b"For all who eat or drink..."
+
+with Signature("ML-DSA-65") as signer:
+    public_key = signer.generate_keypair()
+    signature = signer.sign(message)
+    assert len(signature) <= 3309  # ML-DSA-65 sig size
+
+with Signature("ML-DSA-65") as verifier:
+    ok = verifier.verify(message, signature, public_key)
+    assert ok`,
+      },
+      {
+        language: "javascript",
+        description: "Verify an ML-DSA-65 signature with @noble/post-quantum.",
+        code: `// npm install @noble/post-quantum
+import { ml_dsa65 } from "@noble/post-quantum/ml-dsa";
+
+const { secretKey, publicKey } = ml_dsa65.keygen();
+
+const msg = new TextEncoder().encode("hello PQC");
+const sig = ml_dsa65.sign(secretKey, msg);
+const ok  = ml_dsa65.verify(publicKey, msg, sig);
+
+console.log("verified:", ok, "sig bytes:", sig.length);`,
+      },
+    ],
   },
   {
     id: "slh-dsa",
@@ -95,6 +189,30 @@ export const algorithms: Algorithm[] = [
     deployment: "Standardized as a conservative backup. LMS/XMSS (SP 800-208) used for code and firmware signing.",
     refDocAnchor: "§11.6",
     tag: "Conservative backup",
+    codeSamples: [
+      {
+        language: "bash",
+        description: "Generate an SLH-DSA-SHA2-128f keypair via oqs-provider.",
+        code: `openssl genpkey -algorithm sphincssha2128fsimple -out slhdsa.key
+openssl pkey -in slhdsa.key -noout -text
+
+# Sign and verify a file.
+openssl dgst -sign slhdsa.key -out msg.sig msg.txt
+openssl dgst -verify slhdsa.pub -signature msg.sig msg.txt`,
+      },
+      {
+        language: "python",
+        description: "Sign + verify SLH-DSA-128f with the official liboqs binding.",
+        code: `from oqs import Signature
+
+with Signature("SPHINCS+-SHA2-128f-simple") as signer:
+    pk = signer.generate_keypair()
+    sig = signer.sign(b"firmware update v3.8")
+
+with Signature("SPHINCS+-SHA2-128f-simple") as verifier:
+    assert verifier.verify(b"firmware update v3.8", sig, pk)`,
+      },
+    ],
   },
   {
     id: "fn-dsa",

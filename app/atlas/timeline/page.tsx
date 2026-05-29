@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ChevronLeft, Activity, Calendar, Sparkles, ShieldAlert,
   Shield, Cpu, Gavel, FileCheck2, Atom
@@ -68,8 +69,25 @@ function inAxis(d: number): boolean { return d >= MIN_YEAR && d <= MAX_YEAR; }
 function pct(d: number): number { return ((d - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * 100; }
 
 export default function TimelinePage() {
-  const [cursorYear, setCursorYear] = useState(2026);
-  const [filter, setFilter] = useState<MilestoneCategory | "all">("all");
+  return (
+    <Suspense fallback={null}>
+      <TimelineInner />
+    </Suspense>
+  );
+}
+
+function TimelineInner() {
+  const params = useSearchParams();
+  const yearParam = parseInt(params?.get("year") ?? "", 10);
+  const filterParam = params?.get("filter") as MilestoneCategory | "all" | null;
+  const validFilters: (MilestoneCategory | "all")[] = ["all", "research", "hardware", "standards", "regulation", "deployment"];
+
+  const [cursorYear, setCursorYear] = useState(
+    Number.isFinite(yearParam) && yearParam >= MIN_YEAR && yearParam <= MAX_YEAR ? yearParam : 2026
+  );
+  const [filter, setFilter] = useState<MilestoneCategory | "all">(
+    filterParam && validFilters.includes(filterParam) ? filterParam : "all"
+  );
 
   const decorated = useMemo(() => {
     return milestones

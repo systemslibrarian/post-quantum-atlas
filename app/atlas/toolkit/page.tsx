@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   KeyRound, PenTool, Atom, Hash, Binary,
   Sigma, Spline, ShieldAlert, CheckCircle2, AlertTriangle,
-  Sparkles, Filter, X, GitCompare, Square, CheckSquare
+  Sparkles, Filter, X, GitCompare, Square, CheckSquare, Terminal, Copy
 } from "lucide-react";
 import {
   algorithms, familyLabels, roleLabels, statusLabels,
@@ -482,6 +482,10 @@ function DetailDrawer({ algorithm: a, onClose }: { algorithm: Algorithm; onClose
 
             <Field heading="Real-world deployment">{a.deployment}</Field>
 
+            {a.codeSamples && a.codeSamples.length > 0 && (
+              <CodeSampleTabs samples={a.codeSamples} />
+            )}
+
             <div className="pt-3 border-t border-[var(--color-border-subtle)] text-xs text-[var(--color-text-muted)]">
               Reference: <span className="font-[family-name:var(--font-mono)]">RefDoc.md {a.refDocAnchor}</span>
             </div>
@@ -499,6 +503,69 @@ function Field({ heading, children }: { heading: string; children: React.ReactNo
         {heading}
       </h4>
       <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{children}</p>
+    </div>
+  );
+}
+
+function CodeSampleTabs({ samples }: { samples: NonNullable<Algorithm["codeSamples"]> }) {
+  const [active, setActive] = useState(0);
+  const s = samples[active];
+  return (
+    <div>
+      <div className="flex items-baseline justify-between mb-2">
+        <h4 className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)] flex items-center gap-1.5">
+          <Terminal size={11} aria-hidden="true" /> Try it
+        </h4>
+        <div className="flex gap-1" role="tablist" aria-label="Language">
+          {samples.map((sample, i) => (
+            <button
+              key={sample.language + i}
+              role="tab"
+              aria-selected={i === active}
+              onClick={() => setActive(i)}
+              className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded font-[family-name:var(--font-display)] transition-colors ${
+                i === active
+                  ? "bg-[var(--color-quantum)]/15 text-[var(--color-quantum)]"
+                  : "bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
+              }`}
+            >
+              {sample.label ?? sample.language}
+            </button>
+          ))}
+        </div>
+      </div>
+      <CodeBlock language={s.language} description={s.description} code={s.code} />
+    </div>
+  );
+}
+
+function CodeBlock({ language, description, code }: { language: string; description?: string; code: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function copy() {
+    if (typeof navigator === "undefined" || !navigator.clipboard) return;
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }
+
+  return (
+    <div>
+      {description && <p className="text-xs text-[var(--color-text-muted)] mb-2 leading-relaxed">{description}</p>}
+      <div className="relative">
+        <button
+          onClick={copy}
+          aria-label="Copy code to clipboard"
+          className="absolute top-2 right-2 inline-flex items-center gap-1 text-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] px-2 py-0.5 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] transition-colors"
+        >
+          {copied ? <CheckCircle2 size={10} aria-hidden="true" /> : <Copy size={10} aria-hidden="true" />}
+          {copied ? "Copied" : "Copy"}
+        </button>
+        <pre className="rounded-lg bg-[var(--color-surface)] border border-[var(--color-border-subtle)] p-3 pr-16 overflow-x-auto text-xs leading-relaxed">
+          <code className="font-[family-name:var(--font-mono)] text-[var(--color-text-secondary)]" data-language={language}>{code}</code>
+        </pre>
+      </div>
     </div>
   );
 }

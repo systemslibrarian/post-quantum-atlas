@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   Shield, Globe, Atom, Lock, ArrowRightLeft, Rocket,
-  ChevronRight, BookOpen, GraduationCap, Map, Landmark, ExternalLink
+  ChevronRight, BookOpen, GraduationCap, Map, Landmark, ExternalLink,
+  Sparkles, Briefcase, ClipboardList
 } from "lucide-react";
 import SourceFooter from "./components/SourceFooter";
 import Ticker from "./components/Ticker";
@@ -75,6 +76,35 @@ export default function Home() {
           <div className="hidden md:block animate-fade-up" style={{ animationDelay: "180ms" }}>
             <SonarHero size={320} />
           </div>
+        </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-6 pb-6">
+        <h2 className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)] mb-3">
+          Where to start
+        </h2>
+        <div className="grid gap-3 md:grid-cols-3">
+          <RoleTile
+            icon={Sparkles}
+            tone="quantum"
+            label="Beginner"
+            blurb="Walk the halls in order. No PQC background assumed."
+            href="/learn/foundations"
+          />
+          <RoleTile
+            icon={Briefcase}
+            tone="accent"
+            label="Practitioner"
+            blurb="Algorithm cards, migration playbook, hybrid TLS in action."
+            href="/atlas/toolkit"
+          />
+          <RoleTile
+            icon={ClipboardList}
+            tone="warning"
+            label="Decision-maker"
+            blurb="Deadlines, regulators, and the collapsing timeline."
+            href="/atlas/timeline?filter=regulation"
+          />
         </div>
       </section>
 
@@ -170,6 +200,7 @@ export default function Home() {
       </section>
       </main>
 
+      {/* role tile component declared at file end */}
       <footer className="border-t border-[var(--color-border-subtle)] py-10">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <p className="text-sm text-[var(--color-text-muted)] mb-2">
@@ -191,5 +222,32 @@ export default function Home() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function RoleTile({
+  icon: Icon, tone, label, blurb, href,
+}: {
+  icon: React.ComponentType<{ className?: string; size?: number }>;
+  tone: "quantum" | "accent" | "warning";
+  label: string;
+  blurb: string;
+  href: string;
+}) {
+  const tones = {
+    quantum: { border: "border-[var(--color-quantum)]/25",  bg: "bg-[var(--color-quantum)]/[0.04]",  text: "text-[var(--color-quantum)]"  },
+    accent:  { border: "border-[var(--color-accent)]/25",   bg: "bg-[var(--color-accent)]/[0.04]",   text: "text-[var(--color-accent)]"   },
+    warning: { border: "border-[var(--color-warning)]/25",  bg: "bg-[var(--color-warning)]/[0.04]",  text: "text-[var(--color-warning)]"  },
+  }[tone];
+  return (
+    <Link href={href} className={`group block p-4 rounded-2xl border ${tones.border} ${tones.bg} hover:bg-[var(--color-surface-hover)] transition-colors`}>
+      <div className={`flex items-center gap-2 text-xs uppercase tracking-wider font-[family-name:var(--font-display)] mb-2 ${tones.text}`}>
+        <Icon size={14} aria-hidden="true" /> {label}
+      </div>
+      <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed flex items-start justify-between gap-2">
+        <span>{blurb}</span>
+        <ChevronRight size={14} className={`flex-shrink-0 mt-0.5 ${tones.text} group-hover:translate-x-0.5 transition-transform`} aria-hidden="true" />
+      </p>
+    </Link>
   );
 }

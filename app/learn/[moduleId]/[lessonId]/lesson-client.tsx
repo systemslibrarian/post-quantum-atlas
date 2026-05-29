@@ -7,10 +7,11 @@ import type { ContentSection, TableData } from "../../../lib/curriculum";
 import { isComplete, markComplete } from "../../../lib/progress";
 import { labsForLesson } from "../../../lib/labs";
 import GlossaryText from "../../../components/GlossaryText";
+import Diagram, { type DiagramId } from "../../../components/Diagram";
 import Link from "next/link";
 import {
   ChevronLeft, ChevronRight, CheckCircle2, Circle,
-  AlertTriangle, Info, Lightbulb, BookOpen, Map
+  AlertTriangle, Info, Lightbulb, BookOpen, Map, ExternalLink, FileText
 } from "lucide-react";
 
 
@@ -102,7 +103,27 @@ function SectionRenderer({ section, idx }: { section: ContentSection; idx: numbe
         </ul>
       )}
       {section.table && <DataTable table={section.table} />}
+      {section.diagram && <Diagram id={section.diagram.id as DiagramId} caption={section.diagram.caption} />}
       {section.callout && <CalloutBlock type={section.callout.type} text={section.callout.text} />}
+      {section.cta && (
+        <Link
+          href={section.cta.href}
+          className="my-5 group flex items-center gap-3 p-4 rounded-xl border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/[0.06] hover:bg-[var(--color-accent)]/[0.12] transition-colors"
+        >
+          <div className="w-9 h-9 rounded-lg bg-[var(--color-accent)]/15 flex items-center justify-center flex-shrink-0">
+            <Map size={16} className="text-[var(--color-accent)]" aria-hidden="true" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-[family-name:var(--font-display)] text-sm font-semibold text-[var(--color-accent)]">
+              {section.cta.label}
+            </div>
+            {section.cta.description && (
+              <div className="text-xs text-[var(--color-text-muted)] mt-0.5">{section.cta.description}</div>
+            )}
+          </div>
+          <ChevronRight size={16} className="flex-shrink-0 text-[var(--color-accent)] group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+        </Link>
+      )}
     </div>
   );
 }
@@ -218,6 +239,38 @@ export default function LessonClient({ params }: { params: Promise<{ moduleId: s
                 <li key={i} className="flex gap-3 text-sm text-[var(--color-text-secondary)] leading-relaxed">
                   <CheckCircle2 size={16} className="text-[var(--color-safe)] flex-shrink-0 mt-0.5" />
                   {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Primary sources */}
+        {lesson.sources && lesson.sources.length > 0 && (
+          <div className="mt-10 mb-8 p-6 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-raised)]/40">
+            <h3 className="font-[family-name:var(--font-display)] font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
+              <FileText size={16} aria-hidden="true" />
+              Primary sources
+            </h3>
+            <ul className="space-y-3">
+              {lesson.sources.map((s, i) => (
+                <li key={i}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block"
+                  >
+                    <div className="flex items-start gap-2 text-sm">
+                      <ExternalLink size={13} className="text-[var(--color-accent)] flex-shrink-0 mt-1 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+                      <div>
+                        <div className="text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors leading-snug">{s.title}</div>
+                        {s.note && (
+                          <div className="text-xs text-[var(--color-text-muted)] mt-0.5">{s.note}</div>
+                        )}
+                      </div>
+                    </div>
+                  </a>
                 </li>
               ))}
             </ul>

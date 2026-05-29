@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ChevronLeft, ChevronRight, Play, Pause, RotateCcw, Zap,
   Globe, Server, ArrowRight, ArrowLeft, ShieldAlert, CheckCircle2
@@ -69,10 +70,23 @@ const steps: Step[] = [
 ];
 
 export default function TlsTheaterPage() {
-  const [step, setStep] = useState(1);
+  return (
+    <Suspense fallback={null}>
+      <TlsTheaterInner />
+    </Suspense>
+  );
+}
+
+function TlsTheaterInner() {
+  const params = useSearchParams();
+  const initialStep = Math.max(1, Math.min(steps.length, parseInt(params?.get("step") ?? "1", 10) || 1));
+  const initialAttacker = params?.get("attacker") === "1";
+  const initialPqc = params?.get("pqc") === "1";
+
+  const [step, setStep] = useState(initialStep);
   const [playing, setPlaying] = useState(false);
-  const [attacker, setAttacker] = useState(false);
-  const [pqc, setPqc] = useState(false);
+  const [attacker, setAttacker] = useState(initialAttacker);
+  const [pqc, setPqc] = useState(initialPqc);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {

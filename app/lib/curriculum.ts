@@ -8,6 +8,13 @@ export interface Lesson {
   order: number;
   sections: ContentSection[];
   keyTakeaways: string[];
+  sources?: Source[];
+}
+
+export interface Source {
+  title: string;
+  url: string;
+  note?: string;
 }
 
 export interface ContentSection {
@@ -16,6 +23,8 @@ export interface ContentSection {
   bullets?: string[];
   table?: TableData;
   callout?: { type: "warning" | "info" | "key-concept"; text: string };
+  diagram?: { id: string; caption?: string };
+  cta?: { label: string; href: string; description?: string };
 }
 
 export interface TableData {
@@ -32,6 +41,15 @@ export interface Module {
   color: string; // tailwind color class
   order: number;
   lessons: Lesson[];
+  checkpoint?: Question[];
+}
+
+export interface Question {
+  id: string;
+  prompt: string;
+  choices: { id: string; label: string; detail?: string }[];
+  correctId: string;
+  explanation: string;
 }
 
 export const modules: Module[] = [
@@ -72,7 +90,8 @@ export const modules: Module[] = [
               "Confidentiality (Secrecy): Ensure that information is accessible only to those authorized to have access. The analogy is a sealed envelope — the mail carrier handles it, but cannot read the contents.",
               "Integrity (Tamper-Proofing): Ensure that data has not been changed or corrupted during transit. The analogy is a wax seal — if the seal is broken, the recipient knows someone tampered with the message.",
               "Authentication (Identity): Confirm the identity of the person or system you are communicating with. The analogy is a signature or passport — a mathematical way to prove origin."
-            ]
+            ],
+            diagram: { id: "cia-triad", caption: "Three problems, three families of tools. Trust is where they overlap." }
           },
           {
             heading: "Kerckhoffs's Principle",
@@ -114,6 +133,7 @@ export const modules: Module[] = [
             paragraphs: [
               "Every time you visit an HTTPS website, your browser performs a hybrid handshake: it uses slow asymmetric encryption (RSA/ECC) to securely exchange a temporary symmetric key, then switches to fast symmetric encryption (AES) for the rest of the session. This gives you the security of asymmetric key exchange with the speed of symmetric data encryption."
             ],
+            diagram: { id: "symmetric-vs-asymmetric", caption: "Symmetric solves speed; asymmetric solves key distribution. The internet uses both." },
             callout: { type: "info", text: "This hybrid approach — asymmetric for key exchange, symmetric for bulk data — is the foundation of all internet security and is directly relevant to understanding PQC migration." }
           }
         ]
@@ -193,6 +213,10 @@ export const modules: Module[] = [
         title: "How RSA Works",
         subtitle: "The trapdoor function and computational security",
         order: 5,
+        sources: [
+          { title: "Rivest, Shamir, Adleman — A Method for Obtaining Digital Signatures and Public-Key Cryptosystems (1978)", url: "https://people.csail.mit.edu/rivest/Rsapaper.pdf", note: "The original RSA paper." },
+          { title: "NIST SP 800-56B Rev. 2 — Pair-Wise Key-Establishment Using Integer Factorization Cryptography", url: "https://csrc.nist.gov/pubs/sp/800/56/b/r2/final", note: "Current NIST guidance on RSA-based key establishment." },
+        ],
         keyTakeaways: [
           "RSA's security rests on the difficulty of factoring the product of two large primes",
           "The public key is published openly; the private key is derived from knowing the prime factors",
@@ -204,7 +228,8 @@ export const modules: Module[] = [
             paragraphs: [
               "RSA, created in 1977 by Rivest, Shamir, and Adleman, relies on a trapdoor function — a math problem that is easy to compute in one direction but virtually impossible to reverse without a secret.",
               "The trapdoor in RSA is prime number factorization: multiplying two massive prime numbers (P and Q) together is trivial, but factoring the result (N) back into P and Q is computationally infeasible. The public key (N, e) is published openly; the private key (d) is derived from knowing P and Q."
-            ]
+            ],
+            diagram: { id: "rsa-trapdoor", caption: "Easy one way, infeasible the other. Until Shor's." }
           },
           {
             heading: "Computational vs. Information-Theoretic Security",
@@ -282,6 +307,11 @@ export const modules: Module[] = [
         title: "TLS, HTTPS & Certificates",
         subtitle: "How internet security actually works",
         order: 2,
+        sources: [
+          { title: "RFC 8446 — The Transport Layer Security (TLS) Protocol Version 1.3", url: "https://www.rfc-editor.org/rfc/rfc8446", note: "The current TLS standard." },
+          { title: "Cloudflare — Defending against future threats: Cloudflare goes post-quantum", url: "https://blog.cloudflare.com/post-quantum-for-all/", note: "Production hybrid PQC TLS deployment." },
+          { title: "draft-ietf-tls-hybrid-design — Hybrid key exchange in TLS 1.3", url: "https://datatracker.ietf.org/doc/draft-ietf-tls-hybrid-design/", note: "IETF draft for X-Wing and hybrid KEM combiners." },
+        ],
         keyTakeaways: [
           "TLS handshakes use asymmetric crypto in two critical places quantum computers can attack",
           "Certificate Authorities form a chain of trust verified by your browser's Root Store",
@@ -308,14 +338,16 @@ export const modules: Module[] = [
               "Step 3 — Verification & Key Exchange: Browser verifies certificate, generates a session key, encrypts it with server's public key",
               "Step 4 — Switch to Symmetric: Server decrypts the session key. Both sides share the same key",
               "Step 5 — Secure Data Transfer: All subsequent communication uses fast AES encryption"
-            ]
+            ],
+            diagram: { id: "tls-handshake", caption: "Two asymmetric messages set the stage; the rest of the session runs on symmetric speed." }
           },
           {
             heading: "Why TLS Is the Ultimate Quantum Target",
             paragraphs: [
               "The TLS handshake relies on asymmetric cryptography in two critical places: the CA's digital signature on the certificate, and the key exchange that transports the session key. If a quantum computer can reverse-engineer the CA's private key, it can forge perfect certificates for any website. Browsers would show green padlocks for attacker-controlled servers. The entire chain of trust would evaporate."
             ],
-            callout: { type: "warning", text: "This is the 'quantum apocalypse' scenario — not just breaking one connection, but collapsing the entire trust infrastructure of the internet." }
+            callout: { type: "warning", text: "This is the 'quantum apocalypse' scenario — not just breaking one connection, but collapsing the entire trust infrastructure of the internet." },
+            cta: { label: "See the handshake break in TLS Theater", href: "/atlas/tls-theater?step=3&attacker=1", description: "Pre-loaded at step 3 with the quantum attacker on. Toggle hybrid PQC and watch it hold." }
           }
         ]
       }
@@ -339,6 +371,10 @@ export const modules: Module[] = [
         title: "How Quantum Computers Break Cryptography",
         subtitle: "Qubits, superposition, and Shor's Algorithm",
         order: 1,
+        sources: [
+          { title: "Shor — Polynomial-Time Algorithms for Prime Factorization and Discrete Logarithms on a Quantum Computer (1997)", url: "https://arxiv.org/abs/quant-ph/9508027", note: "The original Shor's algorithm paper." },
+          { title: "Grover — A fast quantum mechanical algorithm for database search (1996)", url: "https://arxiv.org/abs/quant-ph/9605043", note: "The original Grover's algorithm paper." },
+        ],
         keyTakeaways: [
           "Qubits use superposition and entanglement to hold exponentially many states simultaneously",
           "Quantum algorithms use interference to amplify correct answers and cancel wrong ones",
@@ -418,6 +454,10 @@ export const modules: Module[] = [
         title: "Store Now, Decrypt Later",
         subtitle: "Why we must act now, not when quantum arrives",
         order: 3,
+        sources: [
+          { title: "Mosca — Cybersecurity in an era with quantum computers: will we be ready? (2018)", url: "https://eprint.iacr.org/2015/1075.pdf", note: "Where Mosca's inequality was formalized." },
+          { title: "EU NIS Cooperation Group — Roadmap on the transition to post-quantum cryptography (2025)", url: "https://digital-strategy.ec.europa.eu/en/library/nis-cooperation-group-publishes-roadmap-transition-post-quantum-cryptography", note: "EU recognition that HNDL is 'likely occurring already now.'" },
+        ],
         keyTakeaways: [
           "Adversaries are actively intercepting and storing encrypted data today for future quantum decryption",
           "Mosca's Inequality: if data lifetime + migration time > time to CRQC, you've already failed",
@@ -442,7 +482,8 @@ export const modules: Module[] = [
               "Embedded Systems: Satellites, smart grids, and vehicles have RSA/ECC hardcoded into silicon with 20-year lifespans. They cannot be easily patched.",
               "The Migration Marathon: The last major cryptographic upgrade took nearly two decades. Waiting for Q-Day means arriving decades too late."
             ],
-            callout: { type: "warning", text: "The EU's NIS Coop Group has recognized that HNDL attacks are 'likely occurring already now.' This is not a future threat — it is a present-day reality." }
+            callout: { type: "warning", text: "The EU's NIS Coop Group has recognized that HNDL attacks are 'likely occurring already now.' This is not a future threat — it is a present-day reality." },
+            cta: { label: "Try Mosca's slider with a medical-record preset", href: "/atlas/mosca?preset=medical", description: "Slide X (30y), Y (5y), Z (15y) and read the verdict in real time." }
           }
         ]
       },
@@ -517,7 +558,8 @@ export const modules: Module[] = [
             heading: "The Goldilocks Problem",
             paragraphs: [
               "A viable PQC algorithm must be: (1) hard for classical computers, (2) hard for quantum computers, and (3) light enough for a smartphone to compute in milliseconds. PQC keys are often tens of thousands of bits vs. 256 bits for ECC — creating real bandwidth challenges."
-            ]
+            ],
+            diagram: { id: "byte-sizes", caption: "Logarithmic scale. The bandwidth jump is the real cost of the migration." }
           }
         ]
       },
@@ -565,7 +607,8 @@ export const modules: Module[] = [
             heading: "Adding Intentional Noise",
             paragraphs: [
               "In 2005, Oded Regev proposed taking easily solvable equations and corrupting each with tiny random errors. The errors are minuscule — like adding random pennies to restaurant bills — but compound into mathematical chaos. Finding the secret variables requires simultaneously guessing every error — a problem proven NP-Hard."
-            ]
+            ],
+            diagram: { id: "lattice-lwe", caption: "Same grid. With noise, even quantum interference loses the signal." }
           },
           {
             heading: "The File Size Crisis",
@@ -588,6 +631,10 @@ export const modules: Module[] = [
         title: "How ML-KEM (Kyber) Works",
         subtitle: "The key encapsulation mechanism protocol",
         order: 4,
+        sources: [
+          { title: "NIST FIPS 203 — Module-Lattice-Based Key-Encapsulation Mechanism Standard", url: "https://csrc.nist.gov/pubs/fips/203/final", note: "The official ML-KEM standard." },
+          { title: "CRYSTALS-Kyber project", url: "https://pq-crystals.org/kyber/", note: "Reference implementation and design rationale." },
+        ],
         keyTakeaways: [
           "ML-KEM transports a 256-bit symmetric key — it doesn't encrypt data directly",
           "Three steps: key generation (add noise), encapsulation (add more noise), decapsulation (cancel noise with trapdoor)",
@@ -622,6 +669,11 @@ export const modules: Module[] = [
         title: "How ML-DSA (Dilithium) Works",
         subtitle: "Quantum-safe digital signatures",
         order: 5,
+        sources: [
+          { title: "NIST FIPS 204 — Module-Lattice-Based Digital Signature Standard", url: "https://csrc.nist.gov/pubs/fips/204/final", note: "The official ML-DSA standard." },
+          { title: "NIST FIPS 205 — Stateless Hash-Based Digital Signature Standard", url: "https://csrc.nist.gov/pubs/fips/205/final", note: "SLH-DSA — the conservative hash-based backup." },
+          { title: "CRYSTALS-Dilithium project", url: "https://pq-crystals.org/dilithium/", note: "Reference implementation." },
+        ],
         keyTakeaways: [
           "ML-DSA shares MLWE math with ML-KEM — one library powers both",
           "Fiat-Shamir with Aborts proves private key knowledge without revealing it",
@@ -672,6 +724,10 @@ export const modules: Module[] = [
         title: "The Hybrid Transition Strategy",
         subtitle: "Why we deploy both classical and PQC simultaneously",
         order: 1,
+        sources: [
+          { title: "draft-connolly-tls-mlkem-key-agreement — Hybrid X25519+ML-KEM-768 for TLS 1.3", url: "https://datatracker.ietf.org/doc/draft-tls-westerbaan-xyber768d00/", note: "IETF X-Wing draft." },
+          { title: "Castryck, Decru — An efficient key recovery attack on SIDH (2022)", url: "https://eprint.iacr.org/2022/975", note: "The classical attack that broke SIKE — the reason a hybrid safety net matters." },
+        ],
         keyTakeaways: [
           "Hybrid wraps data in both a classical and PQC lock — if either is broken, the other survives",
           "X-Wing (X25519 + ML-KEM-768) is the endorsed hybrid KEM",
@@ -711,6 +767,11 @@ export const modules: Module[] = [
         title: "Global Regulatory Convergence",
         subtitle: "2030 and 2035: the deadlines everyone agrees on",
         order: 3,
+        sources: [
+          { title: "NSA — Announcing the Commercial National Security Algorithm Suite 2.0", url: "https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS_.PDF", note: "CNSA 2.0 mandates ML-KEM-1024 and ML-DSA-87." },
+          { title: "NIST IR 8547 — Transition to Post-Quantum Cryptography Standards", url: "https://csrc.nist.gov/pubs/ir/8547/ipd", note: "U.S. federal PQC transition timeline." },
+          { title: "UK NCSC — Timelines for migration to post-quantum cryptography", url: "https://www.ncsc.gov.uk/guidance/pqc-migration-timelines", note: "UK three-phase plan." },
+        ],
         keyTakeaways: [
           "Major regulators converge on 2030 for critical infrastructure, 2035 for full migration",
           "Every regulator requires cryptographic inventory as the first deliverable",
@@ -730,7 +791,8 @@ export const modules: Module[] = [
                 ["European Union", "NIS2 PQC mandate; HNDL 'likely now'", "Critical by 2030. All by 2035."],
                 ["Others", "UAE, Australia ASD, Singapore MAS, HK HKMA", "Converging on 2030–2035"]
               ]
-            }
+            },
+            cta: { label: "Scrub to 2030 on the threat timeline", href: "/atlas/timeline?filter=regulation&year=2030", description: "Cursor pre-set to 2030 with the regulation filter active." }
           }
         ]
       },

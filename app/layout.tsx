@@ -3,6 +3,8 @@ import "./globals.css";
 import CommandPalette from "./components/CommandPalette";
 import MuseumNav from "./components/MuseumNav";
 import Breadcrumbs from "./components/Breadcrumbs";
+import Tour from "./components/Tour";
+import SwRegister from "./components/SwRegister";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://systemslibrarian.github.io/post-quantum-atlas/"),
@@ -52,6 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Breadcrumbs />
         {children}
         <CommandPalette />
+        <Tour />
+        <SwRegister />
       </body>
     </html>
   );

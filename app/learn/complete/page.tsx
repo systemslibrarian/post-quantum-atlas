@@ -5,14 +5,77 @@ import Link from "next/link";
 import { modules, getTotalLessons } from "../../lib/curriculum";
 import { getCompleted, isComplete } from "../../lib/progress";
 import {
-  Trophy, CheckCircle2, Circle, Map, Sparkles, Printer, GraduationCap, ArrowRight
+  Trophy, CheckCircle2, Circle, Map, Sparkles, Printer, GraduationCap, ArrowRight,
+  Download, Upload, Award
 } from "lucide-react";
+
+// All localStorage keys used by the site. Export/import bundles each into one JSON file.
+const STORAGE_KEYS = [
+  "pqc-learning-progress",        // lesson completion
+  "pq-atlas-challenges-v1",       // /challenges
+  "pq-atlas-hall-checkpoints-v1", // hall checkpoints
+  "pq-atlas-capstone-v1",         // capstone
+];
 
 export default function CompletePage() {
   const [completed, setCompleted] = useState<string[]>([]);
+  const [capstonePassed, setCapstonePassed] = useState(false);
+  const [name, setName] = useState("");
   const total = getTotalLessons();
 
-  useEffect(() => { setCompleted(getCompleted()); }, []);
+  useEffect(() => {
+    setCompleted(getCompleted());
+    try {
+      const cap = JSON.parse(localStorage.getItem("pq-atlas-capstone-v1") ?? "{}") as Record<string, boolean>;
+      // Capstone has 10 questions; all keys solved => passed.
+      const passed = Object.values(cap).filter(Boolean).length >= 10;
+      setCapstonePassed(passed);
+      setName(localStorage.getItem("pq-atlas-cert-name") ?? "");
+    } catch { /* noop */ }
+  }, []);
+
+  function updateName(v: string) {
+    setName(v);
+    try { localStorage.setItem("pq-atlas-cert-name", v); } catch { /* noop */ }
+  }
+
+  function exportProgress() {
+    const payload: Record<string, unknown> = {
+      __atlas_export_version: 1,
+      exportedAt: new Date().toISOString(),
+    };
+    for (const k of STORAGE_KEYS) {
+      const raw = localStorage.getItem(k);
+      if (raw !== null) { try { payload[k] = JSON.parse(raw); } catch { payload[k] = raw; } }
+    }
+    if (name) payload["pq-atlas-cert-name"] = name;
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `post-quantum-atlas-progress-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importProgress(file: File) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(String(e.target?.result ?? "{}")) as Record<string, unknown>;
+        for (const k of STORAGE_KEYS) {
+          if (data[k] !== undefined) localStorage.setItem(k, JSON.stringify(data[k]));
+        }
+        if (typeof data["pq-atlas-cert-name"] === "string") {
+          localStorage.setItem("pq-atlas-cert-name", data["pq-atlas-cert-name"] as string);
+        }
+        window.location.reload();
+      } catch {
+        alert("That file didn't look like a Post-Quantum Atlas export.");
+      }
+    };
+    reader.readAsText(file);
+  }
 
   const done = completed.length;
   const finished = done >= total;
@@ -51,15 +114,39 @@ export default function CompletePage() {
             <span className="font-[family-name:var(--font-mono)] text-xs text-[var(--color-text-muted)]">
               {Math.round((done / total) * 100)}%
             </span>
-            <button
-              onClick={() => window.print()}
-              className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-mid)] transition-colors print:hidden"
-              aria-label="Print this summary"
-            >
-              <Printer size={12} aria-hidden="true" /> Print
-            </button>
+            <div className="ml-auto flex flex-wrap items-center gap-2 print:hidden">
+              <button
+                onClick={exportProgress}
+                aria-label="Export progress to a JSON file"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-mid)] transition-colors"
+              >
+                <Download size={12} aria-hidden="true" /> Export
+              </button>
+              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-mid)] transition-colors cursor-pointer">
+                <Upload size={12} aria-hidden="true" /> Import
+                <input
+                  type="file"
+                  accept="application/json,.json"
+                  className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) importProgress(f); }}
+                />
+              </label>
+              <button
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-mid)] transition-colors"
+                aria-label="Print this summary"
+              >
+                <Printer size={12} aria-hidden="true" /> Print
+              </button>
+            </div>
           </div>
         </section>
+
+        {capstonePassed && (
+          <section className="max-w-4xl mx-auto px-6 pb-10">
+            <Certificate name={name} onName={updateName} />
+          </section>
+        )}
 
         <section className="max-w-4xl mx-auto px-6 pb-10">
           <div className="space-y-5">
@@ -156,6 +243,57 @@ export default function CompletePage() {
           </p>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function Certificate({ name, onName }: { name: string; onName: (v: string) => void }) {
+  const dated = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+  return (
+    <div className="rounded-2xl border-2 border-[var(--color-quantum)]/40 bg-gradient-to-br from-[var(--color-quantum)]/[0.05] to-[var(--color-accent)]/[0.05] p-6 sm:p-8 relative overflow-hidden print:border-black print:bg-white print:text-black">
+      <div className="absolute top-0 right-0 w-32 h-32 opacity-20 print:hidden" aria-hidden="true">
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#a78bfa" strokeWidth="0.5" strokeDasharray="2 2" />
+          <circle cx="50" cy="50" r="28" fill="none" stroke="#a78bfa" strokeWidth="0.5" />
+          <circle cx="50" cy="50" r="10" fill="#a78bfa" fillOpacity="0.3" />
+        </svg>
+      </div>
+      <div className="flex items-start gap-3 mb-6">
+        <Award size={28} className="text-[var(--color-quantum)] flex-shrink-0 print:text-black" aria-hidden="true" />
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-text-muted)] font-[family-name:var(--font-display)] mb-1">Certificate of completion</div>
+          <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold leading-tight">Post-Quantum Atlas</h2>
+          <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Six halls · twenty-one exhibits · ten-question capstone passed.</p>
+        </div>
+      </div>
+      <div className="mb-6 print:hidden">
+        <label className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)] block mb-1">
+          Your name on the certificate
+        </label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => onName(e.target.value)}
+          placeholder="e.g. Paul Clark"
+          className="w-full max-w-sm px-3 py-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-sm focus:border-[var(--color-quantum)] focus:outline-none transition-colors"
+        />
+      </div>
+      <div className="border-t border-[var(--color-border-subtle)] pt-5 mt-5 print:border-black">
+        <div className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-text-muted)] font-[family-name:var(--font-display)] mb-2">Awarded to</div>
+        <div className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)] print:text-black border-b border-dashed border-[var(--color-border-mid)] pb-2 mb-2 min-h-[2.5rem]">
+          {name || <span className="text-[var(--color-text-muted)] italic font-normal">(enter your name above)</span>}
+        </div>
+        <div className="flex flex-wrap justify-between items-end gap-2 mt-4">
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)] mb-0.5">Date</div>
+            <div className="text-sm font-[family-name:var(--font-mono)]">{dated}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)] mb-0.5">Source of truth</div>
+            <div className="text-sm font-[family-name:var(--font-mono)]">RefDoc.md v3.8</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

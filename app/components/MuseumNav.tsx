@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Lock, Map as MapIcon, Compass, GraduationCap, Atom, Sparkles, Menu, X, Search } from "lucide-react";
+import A11yMenu from "./A11yMenu";
 
 interface NavItem {
   label: string;
@@ -62,6 +63,10 @@ export default function MuseumNav() {
           })}
         </nav>
 
+        <div className="ml-auto md:ml-0 flex items-center gap-2">
+          <A11yMenu />
+        </div>
+
         <button
           type="button"
           onClick={() => {
@@ -70,7 +75,7 @@ export default function MuseumNav() {
             window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }));
           }}
           aria-label="Open search"
-          className="ml-auto md:ml-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-mid)] transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-mid)] transition-colors"
         >
           <Search size={12} aria-hidden="true" />
           <span className="hidden sm:inline">Search</span>
