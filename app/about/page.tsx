@@ -22,8 +22,9 @@ export default function AboutPage() {
         </p>
 
         <Section heading="Three ways to use it" icon={<GraduationCap size={18} />}>
-          <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Walk the halls.</strong> Six halls, twenty-one exhibits, in order, with progress tracked in your browser.</p>
-          <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Open the atlas.</strong> Five interactive labs — algorithm cards, the impact map, Mosca&rsquo;s slider, the TLS handshake theater, and the collapsing threat timeline — each rendering one part of the story in a hands-on way.</p>
+          <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Walk the halls.</strong> Six halls, twenty-three exhibits, in order, with progress tracked in your browser.</p>
+          <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Open the atlas.</strong> Eight interactive labs — a live crypto bench that runs real ML-KEM and ML-DSA in your browser, the algorithm cards, the impact map, Mosca&rsquo;s slider, the Q-Day simulator, the TLS handshake theater, the ECC bounce visualizer, and the collapsing threat timeline — each rendering one part of the story in a hands-on way.</p>
+          <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Plan the migration.</strong> A six-step <Link href="/migration" className="underline text-[var(--color-accent)] hover:text-[var(--color-accent-dim)]">migration playbook</Link> turns the theory into an action plan: inventory, prioritize with Mosca&rsquo;s inequality, and move to hybrid.</p>
           <p><strong className="text-[var(--color-text-primary)]">Take the challenges.</strong> Ten short puzzles to see whether the math landed. Solved badges live in your browser.</p>
         </Section>
 

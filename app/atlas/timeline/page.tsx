@@ -99,6 +99,7 @@ function TimelineInner() {
   const offAxis = decorated.filter(m => !inAxis(m.decimal));
 
   const visible = (filter === "all" ? onAxis : onAxis.filter(m => m.category === filter));
+  const reached = visible.filter(m => m.decimal <= cursorYear).length;
 
   return (
     <div className="min-h-screen">
@@ -150,6 +151,13 @@ function TimelineInner() {
               <span>2035</span>
               <span>{MAX_YEAR}</span>
             </div>
+
+            <p className="mt-4 text-sm text-[var(--color-text-secondary)] border-t border-[var(--color-border-subtle)] pt-3" aria-live="polite">
+              By <span className="font-[family-name:var(--font-mono)] text-[var(--color-accent)] font-semibold">{cursorYear}</span>,{" "}
+              <span className="font-semibold text-[var(--color-text-primary)]">{reached}</span> of {visible.length}{" "}
+              {filter === "all" ? "milestones" : `${catMeta[filter as MilestoneCategory].label.toLowerCase()} milestones`}{" "}
+              {reached === 1 ? "has" : "have"} happened — <span className="text-[var(--color-text-muted)]">{visible.length - reached} still ahead</span>.
+            </p>
           </div>
         </section>
 
@@ -268,17 +276,20 @@ function Axis({ cursorYear, milestones, filter }: { cursorYear: number; mileston
 function MilestoneCard({ milestone: m, cursorYear, delay }: { milestone: Milestone & { decimal: number }; cursorYear: number; delay: number }) {
   const Icon = catMeta[m.category].icon;
   const past = m.decimal <= cursorYear;
+  const hex = catMeta[m.category].hex;
   return (
     <li
       className={`animate-fade-up rounded-xl border bg-[var(--color-surface-raised)]/60 p-4 transition-all ${
-        past ? "border-[var(--color-border-mid)]" : "border-[var(--color-border-subtle)] opacity-60"
+        past
+          ? "border-[var(--color-border-mid)]"
+          : "border-dashed border-[var(--color-border-subtle)] opacity-50"
       }`}
-      style={{ animationDelay: `${delay}ms` }}
+      style={{ animationDelay: `${delay}ms`, borderLeft: past ? `3px solid ${hex}` : undefined }}
     >
       <div className="flex items-start gap-3">
         <div
           className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ background: `${catMeta[m.category].hex}1a`, color: catMeta[m.category].hex }}
+          style={{ background: `${hex}1a`, color: hex }}
         >
           <Icon size={16} aria-hidden="true" />
         </div>
@@ -286,6 +297,14 @@ function MilestoneCard({ milestone: m, cursorYear, delay }: { milestone: Milesto
           <div className="flex flex-wrap items-baseline gap-2 mb-0.5">
             <span className="font-[family-name:var(--font-mono)] text-xs text-[var(--color-text-muted)]">{m.date}</span>
             <span className="font-[family-name:var(--font-display)] text-sm font-semibold text-[var(--color-text-primary)]">{m.label}</span>
+            <span
+              className="text-[10px] uppercase tracking-wider font-[family-name:var(--font-display)] px-1.5 py-0.5 rounded-full"
+              style={past
+                ? { background: `${hex}1a`, color: hex }
+                : { background: "var(--color-surface-hover)", color: "var(--color-text-muted)" }}
+            >
+              {past ? "Reached" : "Ahead"}
+            </span>
             {m.source && (
               <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-mono)]">
                 RefDoc {m.source}

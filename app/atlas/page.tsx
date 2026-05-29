@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {
   ChevronRight, Layers, Sliders, Cable,
-  Orbit, Activity, ShieldOff, Map
+  Orbit, Activity, ShieldOff, Map, Radar, FlaskConical
 } from "lucide-react";
 import FamilyMap from "../components/FamilyMap";
 import SourceFooter from "../components/SourceFooter";
@@ -20,6 +20,24 @@ interface Lab {
 }
 
 const labs: Lab[] = [
+  {
+    id: "crypto-bench",
+    title: "Live Crypto Bench",
+    subtitle: "Run real PQC in your browser",
+    description: "Not a simulation. Generate real ML-KEM-768 keys, run a hybrid X25519 + ML-KEM exchange, and sign with ML-DSA-65 — actual NIST FIPS 203/204 bytes, computed live.",
+    icon: FlaskConical,
+    href: "/atlas/crypto-bench",
+    status: "live",
+  },
+  {
+    id: "q-day",
+    title: "Q-Day Simulator",
+    subtitle: "Are you already exposed?",
+    description: "Pick your data type, confidentiality lifetime, migration time, quantum-arrival estimate, and current crypto. Get a verdict: safe, racing the clock, or already harvested.",
+    icon: Radar,
+    href: "/atlas/q-day",
+    status: "live",
+  },
   {
     id: "toolkit",
     title: "PQC Toolkit",

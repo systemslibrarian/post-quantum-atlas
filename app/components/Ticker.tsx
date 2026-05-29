@@ -5,19 +5,25 @@ import { algorithms } from "../lib/algorithms";
 
 // Marquee of algorithm names. Pure CSS animation honors prefers-reduced-motion via globals.css.
 export default function Ticker() {
-  const items = [...algorithms, ...algorithms]; // duplicate so the loop seamlessly wraps
+  // The list is rendered twice so the CSS loop wraps seamlessly. Only the first
+  // copy is real content; the second is a visual duplicate, so it is hidden from
+  // assistive tech and the readable text, and kept out of the tab order.
+  const items = algorithms.map((a) => ({ a, dup: false }))
+    .concat(algorithms.map((a) => ({ a, dup: true })));
 
   return (
     <div className="border-b border-[var(--color-border-subtle)] bg-[var(--color-surface)]/60 overflow-hidden">
       <div className="max-w-full mx-auto relative">
         <div className="ticker-track flex items-center gap-8 py-2 whitespace-nowrap will-change-transform">
-          {items.map((a, i) => {
+          {items.map(({ a, dup }, i) => {
             const broken = a.status === "broken";
             const pending = a.status === "selected" || a.status === "in-development";
             return (
               <Link
                 key={`${a.id}-${i}`}
                 href="/atlas/toolkit"
+                aria-hidden={dup || undefined}
+                tabIndex={dup ? -1 : undefined}
                 className={`inline-flex items-center gap-2 text-[11px] font-[family-name:var(--font-display)] tracking-wide uppercase ${
                   broken ? "text-[var(--color-danger)] line-through opacity-70"
                     : pending ? "text-[var(--color-warning)]"

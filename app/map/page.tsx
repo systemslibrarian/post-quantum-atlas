@@ -79,7 +79,7 @@ export default function MapPage() {
             The whole museum in one glance.
           </h1>
           <p className="text-base text-[var(--color-text-secondary)] max-w-2xl leading-relaxed">
-            Six halls down the left; six labs and the challenges room down the right.
+            Six halls down the left; eight labs and the challenges room down the right.
             Lines show which lab continues which exhibit. Hover any node to light up its neighbors.
           </p>
         </section>

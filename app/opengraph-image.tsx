@@ -44,7 +44,7 @@ export default function OG() {
               wing of the museum.
             </div>
             <div style={{ display: "flex", fontSize: 30, color: "#cbd5e1", lineHeight: 1.35, maxWidth: 720 }}>
-              Six halls, six labs, ten challenges. ML-KEM through Mosca&apos;s inequality, hands-on.
+              Six halls, eight labs, ten challenges. ML-KEM through Mosca&apos;s inequality, hands-on.
             </div>
           </div>
 

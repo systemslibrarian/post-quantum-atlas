@@ -34,6 +34,15 @@ export interface Algorithm {
   refDocAnchor: string;    // section number in RefDoc.md
   tag?: string;            // optional short badge text (e.g., "Primary KEM")
   codeSamples?: CodeSample[];
+  liveDemo?: boolean;      // true when an inline <AlgoDemo> can run this scheme in-browser
+  demos?: DemoLink[];      // external Crypto Lab demos for this algorithm
+}
+
+// A standalone browser demo over in the Crypto Lab (crypto-lab.systemslibrarian.dev).
+export interface DemoLink {
+  title: string;
+  url: string;
+  note: string;            // what the demo shows
 }
 
 export interface CodeSample {
@@ -64,6 +73,12 @@ export const algorithms: Algorithm[] = [
     variants: ["ML-KEM-512", "ML-KEM-768", "ML-KEM-1024"],
     refDocAnchor: "§10",
     tag: "Primary KEM",
+    liveDemo: true,
+    demos: [
+      { title: "Kyber Vault", url: "https://systemslibrarian.github.io/crypto-lab-kyber-vault/", note: "Encrypt a file end-to-end with ML-KEM-768 + AES-256-GCM." },
+      { title: "Hybrid Wire", url: "https://systemslibrarian.github.io/crypto-lab-hybrid-wire/", note: "The X25519 + ML-KEM-768 hybrid handshake, step by step." },
+      { title: "KyberSlash", url: "https://systemslibrarian.github.io/crypto-lab-kyberslash/", note: "How a division timing leak broke real ML-KEM code." },
+    ],
     codeSamples: [
       {
         language: "bash",
@@ -126,6 +141,11 @@ console.log(pub);
     deployment: "OpenSSL / BoringSSL integrated. CNSA 2.0 mandates ML-DSA-87 for U.S. national security systems.",
     variants: ["ML-DSA-44", "ML-DSA-65", "ML-DSA-87"],
     refDocAnchor: "§11",
+    liveDemo: true,
+    demos: [
+      { title: "PKI Chain", url: "https://systemslibrarian.github.io/crypto-lab-pki-chain/", note: "X.509 certificates signed with ML-DSA — PQC in the real PKI." },
+      { title: "Lattice Fault", url: "https://systemslibrarian.github.io/crypto-lab-lattice-fault/", note: "Fault-injection attack on ML-DSA / ML-KEM implementations." },
+    ],
     tag: "Primary signature",
     codeSamples: [
       {
@@ -188,6 +208,10 @@ console.log("verified:", ok, "sig bytes:", sig.length);`,
     ],
     deployment: "Standardized as a conservative backup. LMS/XMSS (SP 800-208) used for code and firmware signing.",
     refDocAnchor: "§11.6",
+    liveDemo: true,
+    demos: [
+      { title: "SPHINCS+ Ledger", url: "https://systemslibrarian.github.io/crypto-lab-sphincs-ledger/", note: "Build an SLH-DSA signature from hashes and a FORS few-time scheme." },
+    ],
     tag: "Conservative backup",
     codeSamples: [
       {
@@ -232,6 +256,7 @@ with Signature("SPHINCS+-SHA2-128f-simple") as verifier:
     deployment: "FIPS 206 in development. Complements ML-DSA for bandwidth-constrained signing.",
     refDocAnchor: "§8",
     tag: "Compact signature",
+    liveDemo: true,
   },
   {
     id: "hqc",
@@ -250,6 +275,10 @@ with Signature("SPHINCS+-SHA2-128f-simple") as verifier:
     deployment: "Selected by NIST in March 2025 for standardization. Meta cryptographers are co-authors.",
     refDocAnchor: "§8",
     tag: "Non-lattice backup",
+    demos: [
+      { title: "HQC Vault", url: "https://systemslibrarian.github.io/crypto-lab-hqc-vault/", note: "The code-based HQC KEM, with its Reed-Muller / Reed-Solomon decoder." },
+      { title: "HQC Timing Break", url: "https://systemslibrarian.github.io/crypto-lab-hqc-timing-break/", note: "A cache-timing attack that recovers an HQC key." },
+    ],
   },
   {
     id: "classic-mceliece",
@@ -268,6 +297,9 @@ with Signature("SPHINCS+-SHA2-128f-simple") as verifier:
     deployment: "Suited for static high-security environments (e.g. long-lived embedded systems).",
     refDocAnchor: "§8",
     tag: "Static / high-security",
+    demos: [
+      { title: "McEliece Gate", url: "https://systemslibrarian.github.io/crypto-lab-mceliece-gate/", note: "Classic McEliece over binary Goppa codes — and why the keys are huge." },
+    ],
   },
   {
     id: "multivariate",
@@ -281,6 +313,9 @@ with Signature("SPHINCS+-SHA2-128f-simple") as verifier:
     sizes: [{ label: "Varies", bytes: undefined }],
     deployment: "No NIST standard. Research-stage / niche use only.",
     refDocAnchor: "§8",
+    demos: [
+      { title: "MPCitH Sign", url: "https://systemslibrarian.github.io/crypto-lab-mpcith-sign/", note: "MPC-in-the-Head — a different non-lattice signature paradigm now favored over multivariate." },
+    ],
   },
   {
     id: "sike",
@@ -313,12 +348,12 @@ export const roleLabels: Record<AlgorithmRole | "none", string> = {
 };
 
 export const statusLabels: Record<AlgorithmStatus, string> = {
-  "standardized": "Standardized",
-  "in-development": "FIPS in development",
-  "selected": "Selected (FIPS pending)",
-  "under-evaluation": "Under evaluation",
-  "broken": "Broken",
-  "niche": "Niche / research",
+  "standardized": "NIST final standard",
+  "in-development": "NIST draft standard",
+  "selected": "NIST selected · pending",
+  "under-evaluation": "Under NIST evaluation",
+  "broken": "Broken · withdrawn",
+  "niche": "Research / niche",
 };
 
 export function getAlgorithm(id: string): Algorithm | undefined {

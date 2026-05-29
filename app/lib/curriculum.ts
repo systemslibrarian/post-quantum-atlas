@@ -1,5 +1,5 @@
 // app/lib/curriculum.ts
-// Full PQC Learning Path curriculum — 6 modules, 21 lessons
+// Full PQC Learning Path curriculum — 6 modules, 23 lessons
 
 export interface Lesson {
   id: string;

@@ -28,14 +28,14 @@ const steps: Step[] = [
     icon: GraduationCap,
     tag: "The halls",
     title: "Walk the curriculum in order.",
-    body: "Six halls, twenty-one exhibits. Foundations → quantum threat → PQC → deployment. Each hall ends with a checkpoint; the final capstone unlocks your certificate.",
+    body: "Six halls, twenty-three exhibits. Foundations → quantum threat → PQC → deployment. Each hall ends with a checkpoint; the final capstone unlocks your certificate.",
     cta: { href: "/learn/foundations", label: "Open Hall 1" },
   },
   {
     icon: Map,
     tag: "The atlas",
     title: "Then push on what you learned.",
-    body: "Six interactive labs: filterable algorithm cards, the breaks-vs-survives map, Mosca's slider, TLS handshake theater, the threat timeline, and an ECC bounce visualizer.",
+    body: "Eight interactive labs: a live bench that runs real ML-KEM and ML-DSA in your browser, the Q-Day simulator, filterable algorithm cards, the breaks-vs-survives map, Mosca's slider, TLS handshake theater, the threat timeline, and an ECC bounce visualizer.",
     cta: { href: "/atlas", label: "Open the atlas" },
   },
   {

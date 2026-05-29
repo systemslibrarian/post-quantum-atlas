@@ -5,13 +5,14 @@ import Link from "next/link";
 import {
   KeyRound, PenTool, Atom, Hash, Binary,
   Sigma, Spline, ShieldAlert, CheckCircle2, AlertTriangle,
-  Sparkles, Filter, X, GitCompare, Square, CheckSquare, Terminal, Copy
+  Sparkles, Filter, X, GitCompare, Square, CheckSquare, Terminal, Copy, ExternalLink, FlaskConical
 } from "lucide-react";
 import {
   algorithms, familyLabels, roleLabels, statusLabels,
   type AlgorithmFamily, type AlgorithmRole, type AlgorithmStatus, type Algorithm
 } from "../../lib/algorithms";
 import LessonBacklinks from "../../components/LessonBacklinks";
+import AlgoDemo from "../../components/AlgoDemo";
 
 type FamilyFilter = AlgorithmFamily | "all";
 type RoleFilter = AlgorithmRole | "all";
@@ -346,11 +347,23 @@ function AlgorithmCard({
         {a.whyItWon}
       </p>
 
-      {a.tag && (
-        <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)]">
-          {a.tag}
-        </p>
-      )}
+      <div className="flex items-center justify-between gap-2">
+        {a.tag ? (
+          <span className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)]">
+            {a.tag}
+          </span>
+        ) : <span />}
+        {(a.liveDemo || (a.demos && a.demos.length > 0)) && (
+          <span className={`inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-[family-name:var(--font-display)] ${
+            a.liveDemo
+              ? "bg-[var(--color-quantum)]/10 text-[var(--color-quantum)]"
+              : "bg-[var(--color-accent)]/10 text-[var(--color-accent)]"
+          }`}>
+            <FlaskConical size={10} aria-hidden="true" />
+            {a.liveDemo ? "Run live" : "Demos"}
+          </span>
+        )}
+      </div>
       </button>
     </div>
   );
@@ -481,6 +494,35 @@ function DetailDrawer({ algorithm: a, onClose }: { algorithm: Algorithm; onClose
             )}
 
             <Field heading="Real-world deployment">{a.deployment}</Field>
+
+            <AlgoDemo algoId={a.id} />
+
+            {a.demos && a.demos.length > 0 && (
+              <div>
+                <h4 className="text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)] mb-2 flex items-center gap-1.5">
+                  <ExternalLink size={11} aria-hidden="true" /> Explore in Crypto Lab
+                </h4>
+                <div className="space-y-2">
+                  {a.demos.map((d) => (
+                    <a
+                      key={d.url}
+                      href={d.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-start gap-2 rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] px-3 py-2 hover:border-[var(--color-accent)]/40 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-[var(--color-text-primary)] font-[family-name:var(--font-display)] flex items-center gap-1">
+                          {d.title}
+                          <ExternalLink size={11} className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent)] transition-colors" aria-hidden="true" />
+                        </div>
+                        <div className="text-xs text-[var(--color-text-muted)] leading-relaxed">{d.note}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {a.codeSamples && a.codeSamples.length > 0 && (
               <CodeSampleTabs samples={a.codeSamples} />

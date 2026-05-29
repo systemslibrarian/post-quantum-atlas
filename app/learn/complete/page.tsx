@@ -97,7 +97,7 @@ export default function CompletePage() {
           </h1>
           <p className="text-base text-[var(--color-text-secondary)] max-w-2xl leading-relaxed mb-4">
             {finished
-              ? `Six halls. Twenty-one exhibits. You came in knowing what RSA was; you leave knowing why a hybrid TLS handshake bundles X25519 with ML-KEM-768, and what year the EU expects critical infrastructure to be migrated.`
+              ? `Six halls. Twenty-three exhibits. You came in knowing what RSA was; you leave knowing why a hybrid TLS handshake bundles X25519 with ML-KEM-768, and what year the EU expects critical infrastructure to be migrated.`
               : `You've completed ${done} of ${total} exhibits. Here's what you've seen, and what's still ahead.`}
           </p>
 
@@ -204,7 +204,7 @@ export default function CompletePage() {
               icon={Map}
               tone="accent"
               title="Open the atlas"
-              body="Six interactive labs that take what you learned and let you push on it."
+              body="Eight interactive labs that take what you learned and let you push on it — including a bench that runs real ML-KEM and ML-DSA in your browser."
               href="/atlas"
             />
             <NextCard
@@ -263,7 +263,7 @@ function Certificate({ name, onName }: { name: string; onName: (v: string) => vo
         <div>
           <div className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-text-muted)] font-[family-name:var(--font-display)] mb-1">Certificate of completion</div>
           <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold leading-tight">Post-Quantum Atlas</h2>
-          <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Six halls · twenty-one exhibits · ten-question capstone passed.</p>
+          <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Six halls · twenty-three exhibits · ten-question capstone passed.</p>
         </div>
       </div>
       <div className="mb-6 print:hidden">

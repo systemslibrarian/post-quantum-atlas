@@ -34,8 +34,8 @@ function MoscaInner() {
   const presetId = params?.get("preset");
   const initial = presets.find(p => p.id === presetId);
 
-  const [x, setX] = useState(initial?.x ?? 20);
-  const [y, setY] = useState(initial?.y ?? 5);
+  const [x, setX] = useState(initial?.x ?? 8);
+  const [y, setY] = useState(initial?.y ?? 4);
   const [z, setZ] = useState(initial?.z ?? 15);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function MoscaInner() {
   }
 
   function reset() {
-    setX(20); setY(5); setZ(15);
+    setX(8); setY(4); setZ(15);
   }
 
   return (
@@ -282,7 +282,9 @@ function SliderRow({
 }
 
 function Timeline({ x, y, z }: { x: number; y: number; z: number }) {
-  const maxYears = Math.max(50, z + 5);
+  // Auto-scale the axis to the current values so dragging any slider — Z included —
+  // visibly moves the bars instead of being lost on a fixed 50-year axis.
+  const maxYears = Math.max(x + y, z, 10) * 1.18;
   const xy = x + y;
   const xPct = useMemo(() => (x / maxYears) * 100, [x, maxYears]);
   const yPct = useMemo(() => (y / maxYears) * 100, [y, maxYears]);

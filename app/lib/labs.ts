@@ -46,17 +46,29 @@ export const labs: Record<string, Lab> = {
     href: "/atlas/ecc-bounce",
     blurb: "Watch point addition on a real elliptic curve and feel the trapdoor.",
   },
+  "q-day": {
+    id: "q-day",
+    title: "Q-Day Simulator",
+    href: "/atlas/q-day",
+    blurb: "Pick your data, timelines, and crypto — get a personal harvest-now-decrypt-later verdict.",
+  },
+  "crypto-bench": {
+    id: "crypto-bench",
+    title: "Live Crypto Bench",
+    href: "/atlas/crypto-bench",
+    blurb: "Run real ML-KEM, hybrid X25519+ML-KEM, and ML-DSA in your browser — actual NIST-standard bytes.",
+  },
 };
 
 // moduleId/lessonId -> related lab ids
 export const lessonLabs: Record<string, string[]> = {
   "modern-crypto/tls-certificates": ["tls-theater", "breaks-survives"],
-  "quantum-threat/store-now-decrypt-later": ["mosca"],
+  "quantum-threat/store-now-decrypt-later": ["mosca", "q-day"],
   "quantum-threat/what-breaks": ["breaks-survives", "toolkit"],
   "pqc-solutions/five-families": ["toolkit"],
-  "pqc-solutions/ml-kem": ["toolkit", "tls-theater"],
-  "pqc-solutions/ml-dsa": ["toolkit"],
-  "transition/hybrid-strategy": ["tls-theater", "toolkit"],
+  "pqc-solutions/ml-kem": ["toolkit", "crypto-bench", "tls-theater"],
+  "pqc-solutions/ml-dsa": ["toolkit", "crypto-bench"],
+  "transition/hybrid-strategy": ["tls-theater", "crypto-bench", "toolkit"],
   "quantum-threat/hardware-timeline": ["timeline"],
   "transition/global-regulation": ["timeline"],
   "transition/nist-process": ["timeline", "toolkit"],
@@ -89,6 +101,15 @@ export const labLessons: Record<string, { moduleId: string; lessonId: string }[]
   "ecc-bounce": [
     { moduleId: "modern-crypto", lessonId: "elliptic-curves" },
     { moduleId: "foundations", lessonId: "rsa-trapdoor" },
+  ],
+  "q-day": [
+    { moduleId: "quantum-threat", lessonId: "store-now-decrypt-later" },
+    { moduleId: "quantum-threat", lessonId: "hardware-timeline" },
+  ],
+  "crypto-bench": [
+    { moduleId: "pqc-solutions", lessonId: "ml-kem" },
+    { moduleId: "pqc-solutions", lessonId: "ml-dsa" },
+    { moduleId: "transition", lessonId: "hybrid-strategy" },
   ],
 };
 

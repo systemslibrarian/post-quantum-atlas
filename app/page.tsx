@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import {
   Shield, Globe, Atom, Lock, ArrowRightLeft, Rocket,
   ChevronRight, BookOpen, GraduationCap, Map, Landmark, ExternalLink,
-  Sparkles, Briefcase, ClipboardList
+  Sparkles, Briefcase, ClipboardList, Radar
 } from "lucide-react";
 import SourceFooter from "./components/SourceFooter";
 import Ticker from "./components/Ticker";
@@ -52,16 +52,20 @@ export default function Home() {
               Post-Quantum<br />
               <span className="text-[var(--color-quantum)]">Cryptography</span>
             </h1>
-            <p className="animate-fade-up text-lg md:text-xl text-[var(--color-text-secondary)] max-w-xl leading-relaxed mb-4" style={{ animationDelay: "160ms" }}>
+            <p className="animate-fade-up text-lg md:text-xl text-[var(--color-text-secondary)] max-w-xl leading-relaxed mb-3" style={{ animationDelay: "160ms" }}>
               {modules.length} halls. {total} exhibits. A guided path from cryptographic foundations
               to the math protecting tomorrow&rsquo;s internet.
             </p>
+            <p className="animate-fade-up text-sm md:text-base text-[var(--color-text-secondary)]/90 max-w-xl leading-relaxed mb-5" style={{ animationDelay: "180ms" }}>
+              Learn what quantum computers threaten, which cryptographic systems survive, and how the
+              internet is migrating from RSA and ECC to <span className="text-[var(--color-text-primary)]">ML-KEM, ML-DSA, SLH-DSA</span>, and
+              hybrid deployment.
+            </p>
             <p className="animate-fade-up text-sm text-[var(--color-text-muted)] mb-6" style={{ animationDelay: "200ms" }}>
-              Companion to <em>&ldquo;From Caesar to Post-Quantum&rdquo;</em> &mdash; Code4Lib Journal.
               Sibling to the{" "}
               <a href="https://github.com/systemslibrarian/cipher-museum" className="underline hover:text-[var(--color-text-secondary)]" target="_blank" rel="noopener noreferrer">
                 Cipher Museum<ExternalLink size={11} className="inline align-baseline ml-0.5" aria-hidden="true" />
-              </a>.
+              </a>{" "}&mdash; where cryptography came from.
             </p>
             <div className="animate-fade-up flex items-center gap-3 text-xs text-[var(--color-text-muted)]" style={{ animationDelay: "240ms" }}>
               <span aria-label={`${completed.length} of ${total} exhibits visited`}>
@@ -95,8 +99,8 @@ export default function Home() {
             icon={Briefcase}
             tone="accent"
             label="Practitioner"
-            blurb="Algorithm cards, migration playbook, hybrid TLS in action."
-            href="/atlas/toolkit"
+            blurb="The six-step migration playbook, algorithm cards, hybrid TLS in action."
+            href="/migration"
           />
           <RoleTile
             icon={ClipboardList}
@@ -130,11 +134,34 @@ export default function Home() {
               <Map size={14} aria-hidden="true" /> Open the atlas
             </div>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed flex items-start justify-between gap-2">
-              <span>Five interactive labs: algorithm cards, the breaks-vs-survives map, Mosca&rsquo;s slider, TLS theater, and the threat timeline.</span>
+              <span>Eight interactive labs: a live crypto bench running real ML-KEM and ML-DSA, algorithm cards, the breaks-vs-survives map, Mosca&rsquo;s slider, the Q-Day simulator, TLS theater, the ECC bounce visualizer, and the threat timeline.</span>
               <ChevronRight size={16} className="flex-shrink-0 text-[var(--color-accent)] group-hover:translate-x-0.5 transition-transform mt-0.5" />
             </p>
           </Link>
         </div>
+
+        <Link
+          href="/atlas/q-day"
+          className="mt-4 block p-5 rounded-2xl border border-[var(--color-quantum)]/30 bg-gradient-to-br from-[var(--color-quantum)]/[0.08] to-[var(--color-accent)]/[0.04] hover:border-[var(--color-quantum)]/50 transition-colors group"
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 rounded-xl bg-[var(--color-quantum)]/15 flex items-center justify-center flex-shrink-0">
+              <Radar size={22} className="text-[var(--color-quantum)]" aria-hidden="true" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[var(--color-quantum)] font-[family-name:var(--font-display)] mb-1">
+                Flagship lab · New
+              </div>
+              <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mb-1">
+                Q-Day Simulator
+              </h3>
+              <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed flex items-start justify-between gap-2">
+                <span>Pick your data, your timelines, and your current crypto. Find out whether you&rsquo;re still safe, racing the clock, or already exposed to harvest-now-decrypt-later.</span>
+                <ChevronRight size={16} className="flex-shrink-0 text-[var(--color-quantum)] group-hover:translate-x-0.5 transition-transform mt-0.5" />
+              </p>
+            </div>
+          </div>
+        </Link>
 
         <div className="mt-4 p-4 rounded-2xl border border-[var(--color-warning)]/20 bg-[var(--color-warning)]/[0.04] flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-[var(--color-warning)] font-[family-name:var(--font-display)] flex-shrink-0">
@@ -203,8 +230,11 @@ export default function Home() {
       {/* role tile component declared at file end */}
       <footer className="border-t border-[var(--color-border-subtle)] py-10">
         <div className="max-w-6xl mx-auto px-6 text-center">
+          <p className="text-sm text-[var(--color-text-secondary)] font-medium mb-1">
+            Paul Clark
+          </p>
           <p className="text-sm text-[var(--color-text-muted)] mb-2">
-            Paul Clark &bull; IT Librarian &amp; Application Systems Analyst &bull; Leon County Public Library
+            Cryptography education, interactive systems, and post-quantum learning tools
           </p>
           <p className="text-sm text-[var(--color-text-muted)] mb-3">
             paul@systemslibrarian.dev &bull; github.com/systemslibrarian
