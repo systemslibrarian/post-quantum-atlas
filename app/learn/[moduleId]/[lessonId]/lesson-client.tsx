@@ -13,13 +13,14 @@ import {
   ChevronLeft, ChevronRight, CheckCircle2, Circle,
   AlertTriangle, Info, Lightbulb, BookOpen, Map, ExternalLink, FileText,
   Clock, FlaskConical, Lock, ShieldCheck, Fingerprint, KeyRound, Layers,
-  Sliders, Cable, Orbit, Activity, ShieldOff, Radar, Zap, Sparkles,
+  Sliders, Cable, Orbit, Activity, ShieldOff, Radar, Zap, Sparkles, Cpu, Globe, Atom, Scale, Boxes,
 } from "lucide-react";
 
 // Icon registry for concept cards (referenced by name in curriculum data).
 const cardIcons: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
   Lock, ShieldCheck, Fingerprint, KeyRound, Layers, Sliders, Cable, Orbit,
   Activity, ShieldOff, Radar, Zap, Sparkles, Lightbulb, Info, AlertTriangle, BookOpen,
+  Clock, Cpu, Globe, Atom, Scale, Boxes,
 };
 
 // Icon per lab, for the "Try it yourself" panel.

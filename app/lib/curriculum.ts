@@ -130,6 +130,12 @@ export const modules: Module[] = [
         title: "Symmetric vs. Asymmetric Encryption",
         subtitle: "Two families that protect the internet together",
         order: 2,
+        facts: [
+          { label: "Two families", value: "Symmetric (one key) · Asymmetric (key pair)" },
+          { label: "Symmetric champ", value: "AES — fast, ideal for bulk data" },
+          { label: "Asymmetric champs", value: "RSA · ECC · Diffie–Hellman" },
+          { label: "How the web uses both", value: "Hybrid handshake — asym exchange, sym data" },
+        ],
         keyTakeaways: [
           "Symmetric encryption uses one shared key — fast but has a key-distribution problem",
           "Asymmetric encryption uses a key pair — solves distribution but is slow",
@@ -165,6 +171,12 @@ export const modules: Module[] = [
         title: "Classical Cipher Taxonomy",
         subtitle: "Transposition, substitution, stream, and block ciphers",
         order: 3,
+        facts: [
+          { label: "Two axes", value: "Transposition vs. substitution · stream vs. block" },
+          { label: "Transposition", value: "Rearranges positions (Rail Fence)" },
+          { label: "Substitution", value: "Replaces characters (Caesar, Vigenère)" },
+          { label: "Modern standard", value: "AES (block) replaced DES in 2001" },
+        ],
         keyTakeaways: [
           "Transposition ciphers rearrange character positions; substitution ciphers replace characters",
           "Stream ciphers encrypt one bit/byte at a time; block ciphers encrypt fixed-size blocks",
@@ -197,6 +209,12 @@ export const modules: Module[] = [
         title: "The Three Essential Cryptographic Tools",
         subtitle: "Encryption, hashing, and digital signatures",
         order: 4,
+        facts: [
+          { label: "Encryption", value: "Two-way — data in transit & at rest" },
+          { label: "Hashing", value: "One-way — passwords, integrity (SHA-256)" },
+          { label: "Signatures", value: "Hash + asymmetric — authenticity, non-repudiation" },
+          { label: "Common mistake", value: "Encrypting passwords instead of hashing them" },
+        ],
         keyTakeaways: [
           "Encryption is two-way (reversible) — protects data in transit and at rest",
           "Hashing is one-way (irreversible) — used for password storage and file verification",
@@ -235,6 +253,12 @@ export const modules: Module[] = [
         title: "How RSA Works",
         subtitle: "The trapdoor function and computational security",
         order: 5,
+        facts: [
+          { label: "Invented", value: "1977 — Rivest, Shamir, Adleman" },
+          { label: "Trapdoor", value: "Multiplying primes is easy; factoring isn't" },
+          { label: "Keys", value: "(N, e) public · d derived from the prime factors" },
+          { label: "Security type", value: "Computational, not information-theoretic" },
+        ],
         sources: [
           { title: "Rivest, Shamir, Adleman — A Method for Obtaining Digital Signatures and Public-Key Cryptosystems (1978)", url: "https://people.csail.mit.edu/rivest/Rsapaper.pdf", note: "The original RSA paper." },
           { title: "NIST SP 800-56B Rev. 2 — Pair-Wise Key-Establishment Using Integer Factorization Cryptography", url: "https://csrc.nist.gov/pubs/sp/800/56/b/r2/final", note: "Current NIST guidance on RSA-based key establishment." },
@@ -283,6 +307,12 @@ export const modules: Module[] = [
         title: "Elliptic Curve Cryptography",
         subtitle: "The geometry powering modern security",
         order: 1,
+        facts: [
+          { label: "Curve", value: "y² = x³ + ax + b" },
+          { label: "Hard problem", value: "Elliptic Curve Discrete Log (ECDLP)" },
+          { label: "Key size", value: "256-bit ECC ≈ 3072-bit RSA (~10× smaller)" },
+          { label: "Quantum status", value: "Broken by Shor's — faster than RSA" },
+        ],
         keyTakeaways: [
           "ECC replaces RSA's prime factoring with operations on mathematical curves (y² = x³ + ax + b)",
           "A 256-bit ECC key equals a 3072-bit RSA key in security — 10× smaller",
@@ -309,10 +339,10 @@ export const modules: Module[] = [
           },
           {
             heading: "Where ECC Is Used Today",
-            bullets: [
-              "Cryptocurrency: Bitcoin and Ethereum use the secp256k1 curve for wallet signatures",
-              "Web Browsing: TLS handshakes use ECDHE for session key establishment",
-              "Secure Messaging: Signal, WhatsApp, and iMessage use ECC for identity and encryption"
+            cards: [
+              { title: "Cryptocurrency", body: "Bitcoin and Ethereum sign wallet transactions on the secp256k1 curve.", icon: "KeyRound", tone: "warning" },
+              { title: "Web browsing", body: "TLS handshakes use ECDHE to establish every session key.", icon: "Cable", tone: "accent" },
+              { title: "Secure messaging", body: "Signal, WhatsApp, and iMessage use ECC for identity and encryption.", icon: "ShieldCheck", tone: "safe" },
             ]
           },
           {
@@ -329,6 +359,12 @@ export const modules: Module[] = [
         title: "TLS, HTTPS & Certificates",
         subtitle: "How internet security actually works",
         order: 2,
+        facts: [
+          { label: "Standard", value: "TLS 1.3 (RFC 8446)" },
+          { label: "Trust model", value: "CAs → browser Root Store (~100 trusted CAs)" },
+          { label: "Asymmetric used in", value: "CA signature + session-key exchange" },
+          { label: "Quantum risk", value: "Forge a CA key → forge any site's padlock" },
+        ],
         sources: [
           { title: "RFC 8446 — The Transport Layer Security (TLS) Protocol Version 1.3", url: "https://www.rfc-editor.org/rfc/rfc8446", note: "The current TLS standard." },
           { title: "Cloudflare — Defending against future threats: Cloudflare goes post-quantum", url: "https://blog.cloudflare.com/post-quantum-for-all/", note: "Production hybrid PQC TLS deployment." },
@@ -393,6 +429,12 @@ export const modules: Module[] = [
         title: "How Quantum Computers Break Cryptography",
         subtitle: "Qubits, superposition, and Shor's Algorithm",
         order: 1,
+        facts: [
+          { label: "Unit", value: "Qubit — superposition of 0 and 1" },
+          { label: "Real mechanism", value: "Interference, not 'try everything at once'" },
+          { label: "Shor's breaks", value: "RSA & ECC — minutes, not eons" },
+          { label: "Grover's", value: "Only halves symmetric keys → use AES-256" },
+        ],
         sources: [
           { title: "Shor — Polynomial-Time Algorithms for Prime Factorization and Discrete Logarithms on a Quantum Computer (1997)", url: "https://arxiv.org/abs/quant-ph/9508027", note: "The original Shor's algorithm paper." },
           { title: "Grover — A fast quantum mechanical algorithm for database search (1996)", url: "https://arxiv.org/abs/quant-ph/9605043", note: "The original Grover's algorithm paper." },
@@ -435,6 +477,12 @@ export const modules: Module[] = [
         title: "The Quantum Hardware Race & Q-Day",
         subtitle: "Engineering reality and the collapsing timeline",
         order: 2,
+        facts: [
+          { label: "Today", value: "Hundreds of noisy qubits" },
+          { label: "To break RSA-2048", value: "Millions of error-corrected qubits" },
+          { label: "Estimate trend", value: "20× lower in 6 years (20M → <1M)" },
+          { label: "Most estimates", value: "Q-Day in ~10–15 years" },
+        ],
         keyTakeaways: [
           "Current quantum computers have hundreds of noisy qubits; breaking RSA needs millions of error-corrected ones",
           "Resource estimates have collapsed 20× in six years — from 20M qubits to under 1M",
@@ -455,11 +503,11 @@ export const modules: Module[] = [
           },
           {
             heading: "Collapsing Resource Estimates",
-            bullets: [
-              "Gidney (May 2025): RSA-2048 revised from 20M to under 1M noisy qubits — 20× reduction in six years",
-              "Iceberg Quantum (Feb 2026): Quantum LDPC codes suggest RSA-2048 tractable with <100K physical qubits",
-              "Google/Stanford (Mar 2026): ECDLP-256 breakable with <500K qubits in minutes",
-              "Caltech–Berkeley–Oratomic (Mar 2026): Neutral-atom designs estimate Shor's with 10K–20K atomic qubits"
+            cards: [
+              { title: "Gidney · May 2025", body: "RSA-2048 revised from 20M to under 1M noisy qubits — a 20× drop in six years.", icon: "Activity", tone: "warning" },
+              { title: "Iceberg Quantum · Feb 2026", body: "Quantum LDPC codes suggest RSA-2048 is tractable with under 100K physical qubits.", icon: "Activity", tone: "warning" },
+              { title: "Google / Stanford · Mar 2026", body: "ECDLP-256 breakable with under 500K qubits — in minutes.", icon: "Activity", tone: "danger" },
+              { title: "Caltech–Berkeley · Mar 2026", body: "Neutral-atom designs estimate Shor's with just 10K–20K atomic qubits.", icon: "Atom", tone: "danger" },
             ]
           },
           {
@@ -476,6 +524,12 @@ export const modules: Module[] = [
         title: "Store Now, Decrypt Later",
         subtitle: "Why we must act now, not when quantum arrives",
         order: 3,
+        facts: [
+          { label: "Attack", value: "Harvest now, decrypt later (HNDL / SNDL)" },
+          { label: "Mosca's test", value: "X + Y > Z → already failed" },
+          { label: "X / Y / Z", value: "Data lifetime · migration time · time to CRQC" },
+          { label: "Status", value: "EU: 'likely occurring already now'" },
+        ],
         sources: [
           { title: "Mosca — Cybersecurity in an era with quantum computers: will we be ready? (2018)", url: "https://eprint.iacr.org/2015/1075.pdf", note: "Where Mosca's inequality was formalized." },
           { title: "EU NIS Cooperation Group — Roadmap on the transition to post-quantum cryptography (2025)", url: "https://digital-strategy.ec.europa.eu/en/library/nis-cooperation-group-publishes-roadmap-transition-post-quantum-cryptography", note: "EU recognition that HNDL is 'likely occurring already now.'" },
@@ -499,10 +553,10 @@ export const modules: Module[] = [
           },
           {
             heading: "Three Colliding Timelines",
-            bullets: [
-              "Data Shelf-Life: Medical records and military secrets need 25–50 years of confidentiality. A CRQC in 15 years exposes data encrypted today.",
-              "Embedded Systems: Satellites, smart grids, and vehicles have RSA/ECC hardcoded into silicon with 20-year lifespans. They cannot be easily patched.",
-              "The Migration Marathon: The last major cryptographic upgrade took nearly two decades. Waiting for Q-Day means arriving decades too late."
+            cards: [
+              { title: "Data shelf-life", body: "Medical and military secrets need 25–50 years of confidentiality — a CRQC in 15 years exposes what you encrypt today.", icon: "Clock", tone: "accent" },
+              { title: "Embedded systems", body: "Satellites, grids, and vehicles have RSA/ECC burned into silicon for 20-year lifespans — not easily patched.", icon: "Cpu", tone: "warning" },
+              { title: "The migration marathon", body: "The last crypto upgrade took nearly two decades. Waiting for Q-Day means arriving decades late.", icon: "Activity", tone: "danger" },
             ],
             callout: { type: "warning", text: "The EU's NIS Coop Group has recognized that HNDL attacks are 'likely occurring already now.' This is not a future threat — it is a present-day reality." },
             cta: { label: "Try Mosca's slider with a medical-record preset", href: "/atlas/mosca?preset=medical", description: "Slide X (30y), Y (5y), Z (15y) and read the verdict in real time." }
@@ -514,6 +568,12 @@ export const modules: Module[] = [
         title: "What Breaks vs. What Survives",
         subtitle: "A clear impact map for every cryptographic tool",
         order: 4,
+        facts: [
+          { label: "Asymmetric", value: "RSA · ECC · DH · signatures — fully broken" },
+          { label: "Symmetric", value: "AES survives — upgrade 128 → 256" },
+          { label: "Hashing", value: "SHA survives — modest speedup only" },
+          { label: "Blockchain", value: "Wallet signatures become forgeable" },
+        ],
         keyTakeaways: [
           "All asymmetric cryptography (RSA, ECC, DH, digital signatures) is completely broken by Shor's",
           "Symmetric cryptography (AES) and hashing (SHA) survive with key-size upgrades",
@@ -558,6 +618,12 @@ export const modules: Module[] = [
         title: "What is Post-Quantum Cryptography?",
         subtitle: "Clearing myths and understanding quantum-safe math",
         order: 1,
+        facts: [
+          { label: "What it is", value: "New math on normal CPUs — not quantum hardware" },
+          { label: "Not the same as", value: "Quantum cryptography (QKD photons)" },
+          { label: "Quantum-safe means", value: "Brute force is the only attack left" },
+          { label: "The catch", value: "Keys are far larger — a bandwidth problem" },
+        ],
         keyTakeaways: [
           "PQC is software running on normal CPUs — not quantum hardware",
           "Quantum-safe means brute force is the only attack, even for a quantum computer",
@@ -590,6 +656,12 @@ export const modules: Module[] = [
         title: "The Five Families of PQC",
         subtitle: "Diversification as a defense strategy",
         order: 2,
+        facts: [
+          { label: "Why five", value: "Diversify so one break ≠ total collapse" },
+          { label: "Lattice", value: "ML-KEM · ML-DSA (the workhorses)" },
+          { label: "Hash / Code", value: "SLH-DSA · HQC · McEliece (backups)" },
+          { label: "Isogeny", value: "SIKE — broken 2022 (cautionary tale)" },
+        ],
         keyTakeaways: [
           "NIST standardized algorithms from multiple math families so a breakthrough against one doesn't compromise all",
           "Lattice-based (ML-KEM, ML-DSA), hash-based (SLH-DSA), and code-based (HQC) are the primary families",
@@ -619,6 +691,12 @@ export const modules: Module[] = [
         title: "Learning With Errors (LWE)",
         subtitle: "The mathematical foundation of PQC",
         order: 3,
+        facts: [
+          { label: "Proposed", value: "2005 — Oded Regev" },
+          { label: "Idea", value: "Add tiny random noise → NP-hard to solve" },
+          { label: "Pure LWE flaw", value: "Million-number keys, several MB" },
+          { label: "MLWE fix", value: "Polynomial modules → ~1,100-byte keys" },
+        ],
         keyTakeaways: [
           "LWE adds intentional random noise to solvable equations, making them NP-Hard even for quantum computers",
           "Pure LWE had a fatal flaw: million-number matrices made keys several megabytes",
@@ -653,6 +731,12 @@ export const modules: Module[] = [
         title: "How ML-KEM (Kyber) Works",
         subtitle: "The key encapsulation mechanism protocol",
         order: 4,
+        facts: [
+          { label: "Type", value: "KEM — transports a 256-bit symmetric key" },
+          { label: "Three steps", value: "Keygen → encapsulate → decapsulate" },
+          { label: "Data encryption", value: "Still AES-256-GCM" },
+          { label: "Tiers", value: "ML-KEM-512 / 768 / 1024" },
+        ],
         sources: [
           { title: "NIST FIPS 203 — Module-Lattice-Based Key-Encapsulation Mechanism Standard", url: "https://csrc.nist.gov/pubs/fips/203/final", note: "The official ML-KEM standard." },
           { title: "CRYSTALS-Kyber project", url: "https://pq-crystals.org/kyber/", note: "Reference implementation and design rationale." },
@@ -670,10 +754,10 @@ export const modules: Module[] = [
           },
           {
             heading: "The Three-Step Handshake",
-            bullets: [
-              "Step 1 — Key Generation: Server generates a private key (clean lattice matrix) and public key (same matrix + MLWE noise). Noisy public key sent to client.",
-              "Step 2 — Encapsulation: Client generates a random 256-bit key, mixes it into the noisy public key, adds more noise. Result is pure chaos to observers.",
-              "Step 3 — Decapsulation: Server applies private key (the mathematical trapdoor), cancels all noise layers, recovers the clean symmetric key."
+            cards: [
+              { title: "1 · Key generation", body: "Server makes a private key (clean lattice matrix) and a public key (same matrix + MLWE noise), and sends the noisy public key.", icon: "KeyRound", tone: "accent" },
+              { title: "2 · Encapsulation", body: "Client picks a random 256-bit key, mixes it into the public key, and adds more noise — pure chaos to any observer.", icon: "Lock", tone: "quantum" },
+              { title: "3 · Decapsulation", body: "Server applies its private-key trapdoor, cancels every noise layer, and recovers the identical symmetric key.", icon: "ShieldCheck", tone: "safe" },
             ]
           },
           {
@@ -691,6 +775,12 @@ export const modules: Module[] = [
         title: "How ML-DSA (Dilithium) Works",
         subtitle: "Quantum-safe digital signatures",
         order: 5,
+        facts: [
+          { label: "Shares math with", value: "ML-KEM — one MLWE library powers both" },
+          { label: "Technique", value: "Fiat–Shamir with Aborts" },
+          { label: "Signature size", value: "~2,420 B vs. ~64 B (ECDSA)" },
+          { label: "Cost", value: "TLS handshakes inflate to 10–15 KB" },
+        ],
         sources: [
           { title: "NIST FIPS 204 — Module-Lattice-Based Digital Signature Standard", url: "https://csrc.nist.gov/pubs/fips/204/final", note: "The official ML-DSA standard." },
           { title: "NIST FIPS 205 — Stateless Hash-Based Digital Signature Standard", url: "https://csrc.nist.gov/pubs/fips/205/final", note: "SLH-DSA — the conservative hash-based backup." },
@@ -746,6 +836,12 @@ export const modules: Module[] = [
         title: "The Hybrid Transition Strategy",
         subtitle: "Why we deploy both classical and PQC simultaneously",
         order: 1,
+        facts: [
+          { label: "Why hybrid", value: "PQC is ~10y young vs. 40y for RSA" },
+          { label: "Idea", value: "Two locks — break one, the other holds" },
+          { label: "Endorsed combo", value: "X-Wing: X25519 + ML-KEM-768" },
+          { label: "Backed by", value: "NCSC · NSA · NIST · EU" },
+        ],
         sources: [
           { title: "draft-connolly-tls-mlkem-key-agreement — Hybrid X25519+ML-KEM-768 for TLS 1.3", url: "https://datatracker.ietf.org/doc/draft-tls-westerbaan-xyber768d00/", note: "IETF X-Wing draft." },
           { title: "Castryck, Decru — An efficient key recovery attack on SIDH (2022)", url: "https://eprint.iacr.org/2022/975", note: "The classical attack that broke SIKE — the reason a hybrid safety net matters." },
@@ -770,6 +866,12 @@ export const modules: Module[] = [
         title: "The NIST Standardization Process",
         subtitle: "Eight years of global competition",
         order: 2,
+        facts: [
+          { label: "Competition", value: "8 years, global, opened 2016" },
+          { label: "Finalized Aug 2024", value: "FIPS 203 · 204 · 205" },
+          { label: "Added Mar 2025", value: "HQC — non-lattice backup KEM" },
+          { label: "Most dramatic casualty", value: "SIKE, broken 2022" },
+        ],
         keyTakeaways: [
           "NIST ran an 8-year global competition starting in 2016 to prevent internet fragmentation",
           "FIPS 203 (ML-KEM), 204 (ML-DSA), 205 (SLH-DSA) finalized August 2024",
@@ -789,6 +891,12 @@ export const modules: Module[] = [
         title: "Global Regulatory Convergence",
         subtitle: "2030 and 2035: the deadlines everyone agrees on",
         order: 3,
+        facts: [
+          { label: "Critical infrastructure", value: "2030" },
+          { label: "Full migration", value: "2035" },
+          { label: "First deliverable", value: "Cryptographic inventory" },
+          { label: "EU on HNDL", value: "'Likely occurring already now'" },
+        ],
         sources: [
           { title: "NSA — Announcing the Commercial National Security Algorithm Suite 2.0", url: "https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS_.PDF", note: "CNSA 2.0 mandates ML-KEM-1024 and ML-DSA-87." },
           { title: "NIST IR 8547 — Transition to Post-Quantum Cryptography Standards", url: "https://csrc.nist.gov/pubs/ir/8547/ipd", note: "U.S. federal PQC transition timeline." },
@@ -823,6 +931,12 @@ export const modules: Module[] = [
         title: "Enterprise Migration: Meta's Framework",
         subtitle: "A practical playbook for any organization",
         order: 4,
+        facts: [
+          { label: "Maturity model", value: "Unaware → Aware → Ready → Hardened → Enabled" },
+          { label: "Six steps", value: "Prioritize → Inventory → Dependencies → Design → Guardrails → Integrate" },
+          { label: "First move", value: "Cryptographic inventory" },
+          { label: "Default design", value: "ML-KEM-768 + ML-DSA, hybrid" },
+        ],
         keyTakeaways: [
           "Meta's 5-level maturity model: PQ-Unaware → PQ-Aware → PQ-Ready → PQ-Hardened → PQ-Enabled",
           "Six-step strategy: Prioritize → Inventory → Dependencies → Design → Guardrails → Integrate",
@@ -872,6 +986,12 @@ export const modules: Module[] = [
         title: "Who's Already Using PQC",
         subtitle: "Chrome, Signal, Apple, Meta, and more",
         order: 1,
+        facts: [
+          { label: "Chrome + Cloudflare", value: "Hybrid TLS live for most users" },
+          { label: "Messaging", value: "Apple PQ3 · Signal PQXDH (ML-KEM)" },
+          { label: "Libraries", value: "OpenSSL · BoringSSL · liboqs" },
+          { label: "Takeaway", value: "PQC is in production today" },
+        ],
         keyTakeaways: [
           "Most Chrome users are already performing PQC handshakes via X25519 + ML-KEM-768",
           "Signal, Apple iMessage, and Meta have deployed PQC in production messaging",
@@ -902,6 +1022,12 @@ export const modules: Module[] = [
         title: "PQC in Telecommunications: 5G Core",
         subtitle: "Lab-validated performance in real network infrastructure",
         order: 2,
+        facts: [
+          { label: "Why 5G Core", value: "Cloud-native, TLS/PKI-dependent → quantum-exposed" },
+          { label: "Latency cost", value: "+2.7% median (lab-validated)" },
+          { label: "Testbed", value: "open5gs + liboqs, 10 network functions" },
+          { label: "Verdict", value: "PQC viable for telecom infrastructure" },
+        ],
         keyTakeaways: [
           "5G Core's PKI-dependent architecture makes it uniquely quantum-vulnerable",
           "Hybrid PQC adds only ~2.7% median latency overhead in lab testing",
@@ -940,6 +1066,12 @@ export const modules: Module[] = [
         title: "Developer Migration Considerations",
         subtitle: "PQC is not a drop-in replacement",
         order: 3,
+        facts: [
+          { label: "Bottleneck shifts", value: "CPU → network bandwidth" },
+          { label: "Watch", value: "DB schemas · MTU · IoT RAM · key hierarchy" },
+          { label: "TLS handshakes", value: "10–15 KB (vs. 2–3 KB classical)" },
+          { label: "Mitigation", value: "KEMTLS replaces handshake signatures" },
+        ],
         keyTakeaways: [
           "Database schemas, network MTU limits, IoT RAM constraints, and key hierarchies all need updating",
           "The bottleneck shifts from CPU (RSA's big-integer math) to network bandwidth (larger PQC keys)",
