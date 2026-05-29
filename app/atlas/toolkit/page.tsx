@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  ChevronLeft, KeyRound, PenTool, Atom, Hash, Binary,
+  KeyRound, PenTool, Atom, Hash, Binary,
   Sigma, Spline, ShieldAlert, CheckCircle2, AlertTriangle,
-  Sparkles, Filter, X
+  Sparkles, Filter, X, GitCompare, Square, CheckSquare
 } from "lucide-react";
 import {
   algorithms, familyLabels, roleLabels, statusLabels,
@@ -61,7 +61,17 @@ export default function ToolkitPage() {
   const [role, setRole] = useState<RoleFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [compareOpen, setCompareOpen] = useState(false);
   const openerRef = useRef<HTMLButtonElement | null>(null);
+
+  function toggleSelected(id: string) {
+    setSelected(prev => {
+      if (prev.includes(id)) return prev.filter(x => x !== id);
+      if (prev.length >= 3) return [...prev.slice(1), id]; // FIFO at 3
+      return [...prev, id];
+    });
+  }
 
   // Esc closes the drawer; lock body scroll while open.
   useEffect(() => {
@@ -170,7 +180,9 @@ export default function ToolkitPage() {
               key={a.id}
               algorithm={a}
               delay={i * 50}
+              selected={selected.includes(a.id)}
               onOpen={(el) => { openerRef.current = el; setOpenId(a.id); }}
+              onToggleSelect={() => toggleSelected(a.id)}
             />
           ))}
         </div>
@@ -182,6 +194,36 @@ export default function ToolkitPage() {
       </section>
       <LessonBacklinks labId="toolkit" />
       </main>
+
+      {selected.length > 0 && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-4 py-2 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-mid)] shadow-2xl backdrop-blur-md">
+          <span className="text-xs text-[var(--color-text-secondary)] font-[family-name:var(--font-display)]">
+            {selected.length} selected
+          </span>
+          <button
+            onClick={() => setCompareOpen(true)}
+            disabled={selected.length < 2}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-accent)] text-[var(--color-surface)] text-xs font-[family-name:var(--font-display)] font-medium hover:bg-[var(--color-accent-dim)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors min-h-[32px]"
+          >
+            <GitCompare size={12} aria-hidden="true" />
+            Compare
+          </button>
+          <button
+            onClick={() => setSelected([])}
+            aria-label="Clear selection"
+            className="w-6 h-6 rounded-full bg-[var(--color-surface-hover)] hover:bg-[var(--color-border-mid)] flex items-center justify-center text-[var(--color-text-secondary)]"
+          >
+            <X size={12} aria-hidden="true" />
+          </button>
+        </div>
+      )}
+
+      {compareOpen && (
+        <CompareDrawer
+          algorithms={selected.map(id => algorithms.find(a => a.id === id)!).filter(Boolean)}
+          onClose={() => setCompareOpen(false)}
+        />
+      )}
 
       {open && <DetailDrawer algorithm={open} onClose={() => setOpenId(null)} />}
 
@@ -234,28 +276,43 @@ function FilterPills<T extends string>({
 }
 
 function AlgorithmCard({
-  algorithm: a, delay, onOpen,
-}: { algorithm: Algorithm; delay: number; onOpen: (el: HTMLButtonElement) => void }) {
+  algorithm: a, delay, selected, onOpen, onToggleSelect,
+}: { algorithm: Algorithm; delay: number; selected: boolean; onOpen: (el: HTMLButtonElement) => void; onToggleSelect: () => void }) {
   const FamIcon = familyIcon[a.family];
   const RoleIcon = roleIcon[a.role];
   const Status = statusStyle[a.status];
 
   return (
-    <button
-      onClick={(e) => onOpen(e.currentTarget)}
-      aria-label={`Open details for ${a.name}${a.aka ? ` (${a.aka})` : ""}, ${statusLabels[a.status]}`}
-      aria-haspopup="dialog"
-      className={`animate-fade-up card-glow text-left h-full block p-5 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-raised)]/80 backdrop-blur-sm hover:shadow-2xl transition-all group ${
-        a.status === "broken" ? "opacity-90" : ""
-      }`}
+    <div
+      className={`animate-fade-up card-glow relative h-full p-5 rounded-2xl border bg-[var(--color-surface-raised)]/80 backdrop-blur-sm hover:shadow-2xl transition-all group ${
+        selected ? "border-[var(--color-accent)]/60 ring-1 ring-[var(--color-accent)]/30" : "border-[var(--color-border-subtle)]"
+      } ${a.status === "broken" ? "opacity-90" : ""}`}
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="flex items-start justify-between mb-3">
+      {/* Compare checkbox in the top-right corner */}
+      <button
+        onClick={onToggleSelect}
+        aria-label={selected ? `Remove ${a.name} from comparison` : `Add ${a.name} to comparison`}
+        aria-pressed={selected}
+        className={`absolute top-3 right-3 z-10 w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
+          selected ? "bg-[var(--color-accent)]/20 text-[var(--color-accent)]" : "bg-[var(--color-surface)]/60 text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
+        }`}
+      >
+        {selected ? <CheckSquare size={14} /> : <Square size={14} />}
+      </button>
+
+      <button
+        onClick={(e) => onOpen(e.currentTarget)}
+        aria-label={`Open details for ${a.name}${a.aka ? ` (${a.aka})` : ""}, ${statusLabels[a.status]}`}
+        aria-haspopup="dialog"
+        className="text-left w-full"
+      >
+      <div className="flex items-start justify-between mb-3 pr-8">
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${familyBg[a.family]}`}>
-          <FamIcon size={20} className={familyColor[a.family]} />
+          <FamIcon size={20} className={familyColor[a.family]} aria-hidden="true" />
         </div>
         <div className={`flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full font-[family-name:var(--font-display)] ${Status.bg} ${Status.tint}`}>
-          <Status.icon size={11} />
+          <Status.icon size={11} aria-hidden="true" />
           {statusLabels[a.status]}
         </div>
       </div>
@@ -294,7 +351,8 @@ function AlgorithmCard({
           {a.tag}
         </p>
       )}
-    </button>
+      </button>
+    </div>
   );
 }
 
@@ -441,6 +499,100 @@ function Field({ heading, children }: { heading: string; children: React.ReactNo
         {heading}
       </h4>
       <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{children}</p>
+    </div>
+  );
+}
+
+function CompareDrawer({ algorithms: list, onClose }: { algorithms: Algorithm[]; onClose: () => void }) {
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    closeBtnRef.current?.focus();
+    const prev = document.body.classList.contains("no-scroll");
+    document.body.classList.add("no-scroll");
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      if (!prev) document.body.classList.remove("no-scroll");
+    };
+  }, [onClose]);
+
+  const rows: { label: string; render: (a: Algorithm) => React.ReactNode }[] = [
+    { label: "Family", render: a => familyLabels[a.family] },
+    { label: "Role",   render: a => roleLabels[a.role] },
+    { label: "FIPS",   render: a => a.fips ?? "—" },
+    { label: "Status", render: a => statusLabels[a.status] },
+    { label: "Core math",     render: a => <span className="text-xs">{a.coreMath}</span> },
+    { label: "Why it won",    render: a => <span className="text-xs">{a.whyItWon}</span> },
+    { label: "Trade-off",     render: a => <span className="text-xs">{a.tradeoff}</span> },
+    { label: "Sizes",         render: a => (
+      <ul className="text-xs space-y-0.5">
+        {a.sizes.map((s, i) => (
+          <li key={i} className="font-[family-name:var(--font-mono)] flex justify-between gap-2">
+            <span className="text-[var(--color-text-muted)] truncate">{s.label}</span>
+            <span>{s.bytes !== undefined ? `${s.bytes.toLocaleString()} B` : "—"}</span>
+          </li>
+        ))}
+      </ul>
+    )},
+    { label: "Deployment",    render: a => <span className="text-xs">{a.deployment}</span> },
+    { label: "RefDoc",        render: a => <span className="font-[family-name:var(--font-mono)] text-xs">{a.refDocAnchor}</span> },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-4 md:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Algorithm comparison">
+      <button aria-label="Close comparison" tabIndex={-1} className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-5xl bg-[var(--color-surface-raised)] border border-[var(--color-border-mid)] rounded-2xl shadow-2xl overflow-hidden my-4">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--color-border-subtle)]">
+          <h2 className="font-[family-name:var(--font-display)] text-base font-semibold flex items-center gap-2">
+            <GitCompare size={16} className="text-[var(--color-accent)]" aria-hidden="true" />
+            Side by side
+          </h2>
+          <button
+            ref={closeBtnRef}
+            onClick={onClose}
+            aria-label="Close"
+            className="w-8 h-8 rounded-full bg-[var(--color-surface-hover)] hover:bg-[var(--color-border-mid)] flex items-center justify-center text-[var(--color-text-secondary)]"
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[var(--color-border-subtle)] bg-[var(--color-surface)]/40">
+                <th className="text-left px-4 py-3 font-[family-name:var(--font-display)] text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-semibold w-32">
+                  &nbsp;
+                </th>
+                {list.map(a => (
+                  <th key={a.id} className="text-left px-4 py-3 align-top">
+                    <div className={`inline-flex items-center gap-2 mb-1`}>
+                      <span className={`w-2 h-2 rounded-full ${familyBg[a.family]}`} aria-hidden="true" />
+                      <span className="font-[family-name:var(--font-display)] font-semibold">{a.name}</span>
+                    </div>
+                    {a.aka && <div className="text-[11px] font-[family-name:var(--font-mono)] text-[var(--color-text-muted)]">{a.aka}</div>}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(r => (
+                <tr key={r.label} className="border-b border-[var(--color-border-subtle)]/50">
+                  <th scope="row" className="text-left px-4 py-3 align-top text-[10px] uppercase tracking-wider text-[var(--color-text-muted)] font-[family-name:var(--font-display)] font-semibold">
+                    {r.label}
+                  </th>
+                  {list.map(a => (
+                    <td key={a.id} className="px-4 py-3 align-top text-[var(--color-text-secondary)]">
+                      {r.render(a)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

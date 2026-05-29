@@ -273,14 +273,14 @@ export default function LessonClient({ params }: { params: Promise<{ moduleId: s
             </Link>
           ) : (
             <Link
-              href="/"
+              href="/learn/complete"
               className="group p-4 rounded-xl border border-[var(--color-safe)]/20 hover:border-[var(--color-safe)]/40 bg-[var(--color-safe)]/5 hover:bg-[var(--color-safe)]/10 transition-all text-right"
             >
               <span className="text-xs text-[var(--color-safe)] flex items-center gap-1 justify-end mb-1">
                 Finish <CheckCircle2 size={14} />
               </span>
               <span className="text-sm font-[family-name:var(--font-display)] font-medium text-[var(--color-safe)]">
-                Back to Overview
+                Your summary
               </span>
             </Link>
           )}

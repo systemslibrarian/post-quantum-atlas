@@ -62,7 +62,8 @@ const labs: Lab[] = [
     subtitle: "Why ECC is a billiards game",
     description: "Watch point addition on a real elliptic curve. Try to count the bounces — that's the Discrete Log Problem.",
     icon: Orbit,
-    status: "coming-soon",
+    href: "/atlas/ecc-bounce",
+    status: "live",
   },
   {
     id: "threat-timeline",
