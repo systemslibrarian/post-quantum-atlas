@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
   Map as MapIcon, GraduationCap, Sparkles, Atom, ArrowRight
@@ -19,6 +20,7 @@ interface Node {
 
 export default function MapPage() {
   const [hover, setHover] = useState<string | null>(null);
+  const router = useRouter();
 
   const hallNodes: Node[] = modules.map((m) => ({
     id: `hall:${m.id}`,
@@ -92,6 +94,7 @@ export default function MapPage() {
               hover={hover}
               isRelated={isRelated}
               onHover={setHover}
+              onNavigate={(href) => router.push(href)}
             />
           </div>
         </section>
@@ -167,9 +170,10 @@ interface MapSvgProps {
   hover: string | null;
   isRelated: (id: string) => boolean;
   onHover: (id: string | null) => void;
+  onNavigate: (href: string) => void;
 }
 
-function MapSvg({ halls, labs, challenges, edges, hover, isRelated, onHover }: MapSvgProps) {
+function MapSvg({ halls, labs, challenges, edges, hover, isRelated, onHover, onNavigate }: MapSvgProps) {
   // Layout in a 1000x600 virtual canvas.
   const W = 1000;
   const H = 600;
@@ -216,19 +220,21 @@ function MapSvg({ halls, labs, challenges, edges, hover, isRelated, onHover }: M
 
       {/* Nodes */}
       {halls.map((n, i) => (
-        <NodeShape key={n.id} node={n} x={leftX} y={hallY(i)} anchor="left" related={hover ? isRelated(n.id) : true} dimmed={!!hover && !isRelated(n.id)} onHover={onHover} />
+        <NodeShape key={n.id} node={n} x={leftX} y={hallY(i)} anchor="left" related={hover ? isRelated(n.id) : true} dimmed={!!hover && !isRelated(n.id)} onHover={onHover} onNavigate={onNavigate} />
       ))}
       {rightItems.map((n, i) => (
-        <NodeShape key={n.id} node={n} x={rightX} y={rightY(i)} anchor="right" related={hover ? isRelated(n.id) : true} dimmed={!!hover && !isRelated(n.id)} onHover={onHover} />
+        <NodeShape key={n.id} node={n} x={rightX} y={rightY(i)} anchor="right" related={hover ? isRelated(n.id) : true} dimmed={!!hover && !isRelated(n.id)} onHover={onHover} onNavigate={onNavigate} />
       ))}
     </svg>
   );
 }
 
 function NodeShape({
-  node, x, y, anchor, related, dimmed, onHover,
+  node, x, y, anchor, related, dimmed, onHover, onNavigate,
 }: {
-  node: Node; x: number; y: number; anchor: "left" | "right"; related: boolean; dimmed: boolean; onHover: (id: string | null) => void;
+  node: Node; x: number; y: number; anchor: "left" | "right"; related: boolean; dimmed: boolean;
+  onHover: (id: string | null) => void;
+  onNavigate: (href: string) => void;
 }) {
   const w = 160;
   const h = 36;
@@ -236,50 +242,54 @@ function NodeShape({
   const ry = y - h / 2;
   const opacity = dimmed ? 0.3 : 1;
 
-  // We render a transparent <a> wrapping the rect+label so clicks navigate.
+  // Click handled via the router (which prepends basePath) instead of a raw <a>;
+  // the latter would 404 under /post-quantum-atlas/ on GitHub Pages.
   return (
     <g
-      style={{ opacity, transition: "opacity 0.2s" }}
+      role="link"
+      tabIndex={0}
+      aria-label={`${node.title} — ${node.subtitle}`}
+      style={{ opacity, transition: "opacity 0.2s", cursor: "pointer" }}
       onMouseEnter={() => onHover(node.id)}
       onMouseLeave={() => onHover(null)}
       onFocus={() => onHover(node.id)}
       onBlur={() => onHover(null)}
+      onClick={() => onNavigate(node.href)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onNavigate(node.href); } }}
     >
-      <a href={node.href} aria-label={`${node.title} — ${node.subtitle}`}>
-        <rect
-          x={rx}
-          y={ry}
-          rx={8}
-          ry={8}
-          width={w}
-          height={h}
-          fill={`${node.hex}${related ? "33" : "1a"}`}
-          stroke={node.hex}
-          strokeOpacity={related ? 0.9 : 0.4}
-          strokeWidth={related ? 1.4 : 0.8}
-        />
-        <text
-          x={x}
-          y={y - 2}
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="600"
-          fill="#f1f5f9"
-          fontFamily="Outfit, sans-serif"
-        >
-          {truncate(node.title, 22)}
-        </text>
-        <text
-          x={x}
-          y={y + 11}
-          textAnchor="middle"
-          fontSize="8"
-          fill="#94a3b8"
-          fontFamily="JetBrains Mono, monospace"
-        >
-          {truncate(node.subtitle, 32)}
-        </text>
-      </a>
+      <rect
+        x={rx}
+        y={ry}
+        rx={8}
+        ry={8}
+        width={w}
+        height={h}
+        fill={`${node.hex}${related ? "33" : "1a"}`}
+        stroke={node.hex}
+        strokeOpacity={related ? 0.9 : 0.4}
+        strokeWidth={related ? 1.4 : 0.8}
+      />
+      <text
+        x={x}
+        y={y - 2}
+        textAnchor="middle"
+        fontSize="11"
+        fontWeight="600"
+        fill="#f1f5f9"
+        fontFamily="Outfit, sans-serif"
+      >
+        {truncate(node.title, 22)}
+      </text>
+      <text
+        x={x}
+        y={y + 11}
+        textAnchor="middle"
+        fontSize="8"
+        fill="#94a3b8"
+        fontFamily="JetBrains Mono, monospace"
+      >
+        {truncate(node.subtitle, 32)}
+      </text>
     </g>
   );
 }
