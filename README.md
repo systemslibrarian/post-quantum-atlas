@@ -95,7 +95,7 @@ RefDoc.md                             # canonical reference
 
 ## Attribution
 
-Paul Lester — IT Librarian & Application Systems Analyst, Leon County Public Library
+Paul Clark — IT Librarian & Application Systems Analyst, Leon County Public Library
 paul@systemslibrarian.dev · github.com/systemslibrarian
 
 > "Whether you eat or drink, or whatever you do, do it all for the glory of God." — 1 Corinthians 10:31

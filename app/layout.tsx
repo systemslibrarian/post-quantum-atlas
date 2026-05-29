@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   },
   description: "An interactive learning system for post-quantum cryptography. 6 modules, 21 lessons, and a growing atlas of hands-on labs — from RSA and ECC through Shor's, Mosca's inequality, ML-KEM, ML-DSA, and hybrid TLS migration.",
   keywords: ["post-quantum cryptography", "PQC", "ML-KEM", "ML-DSA", "SLH-DSA", "Kyber", "Dilithium", "quantum computing", "TLS", "NIST FIPS 203", "FIPS 204", "FIPS 205", "Mosca's inequality"],
-  authors: [{ name: "Paul Lester", url: "https://github.com/systemslibrarian" }],
+  authors: [{ name: "Paul Clark", url: "https://github.com/systemslibrarian" }],
   openGraph: {
     type: "website",
     title: "Post-Quantum Atlas",

@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Sparkles, CheckCircle2, XCircle, RotateCcw, Lock,
-  Cable, FileSignature, Hash, ShieldOff, AlertTriangle, Trophy
+  Cable, FileSignature, Hash, ShieldOff, AlertTriangle, Trophy,
+  Shield, Cpu, Gavel, Calendar, Layers
 } from "lucide-react";
 
 interface Choice {
@@ -94,6 +95,76 @@ const challenges: Challenge[] = [
     correctId: "already-failed",
     explanation: "X + Y = 35 years > Z = 15 years. By Mosca's inequality, any record encrypted today under classical asymmetric crypto is on the table for retroactive decryption. The decision to migrate is already overdue for 30-year medical secrecy.",
   },
+  {
+    id: "hash-backup",
+    title: "Conservative hash-based backup",
+    icon: Shield,
+    prompt: "If a future cryptanalytic result breaks the lattice family entirely, which standardized signature scheme keeps working — built only from hash primitives?",
+    choices: [
+      { id: "ml-dsa",   label: "ML-DSA",   detail: "Lattice-based (MLWE)." },
+      { id: "fn-dsa",   label: "FN-DSA",   detail: "NTRU lattices + FFT sampling." },
+      { id: "slh-dsa",  label: "SLH-DSA",  detail: "Stateless hash-based (FIPS 205)." },
+      { id: "ecdsa",    label: "ECDSA",    detail: "Elliptic curves." },
+    ],
+    correctId: "slh-dsa",
+    explanation: "SLH-DSA (SPHINCS+) is the only NIST signature standard built entirely from hash functions. That's exactly why NIST kept it — different math from ML-DSA, so a lattice break doesn't take it down with it.",
+  },
+  {
+    id: "xwing-tier",
+    title: "X-Wing — which ML-KEM tier?",
+    icon: Layers,
+    prompt: "The IANA-registered X-Wing hybrid (group 0x11EC) used by Chrome and Cloudflare combines X25519 with which ML-KEM variant?",
+    choices: [
+      { id: "512",  label: "ML-KEM-512",  detail: "2×2 module grid · AES-128 equivalent." },
+      { id: "768",  label: "ML-KEM-768",  detail: "3×3 module grid · AES-192 equivalent." },
+      { id: "1024", label: "ML-KEM-1024", detail: "4×4 module grid · AES-256 equivalent." },
+      { id: "ml-dsa", label: "ML-DSA-65", detail: "That's a signature scheme, not a KEM." },
+    ],
+    correctId: "768",
+    explanation: "X-Wing pairs X25519 with ML-KEM-768 — the high-security middle tier. The EU and most major regulators recommend ML-KEM-768 as the migration default; ML-KEM-1024 is reserved for top-secret CNSA 2.0 systems.",
+  },
+  {
+    id: "cnsa-2",
+    title: "CNSA 2.0 mandate",
+    icon: Gavel,
+    prompt: "For U.S. national-security systems under CNSA 2.0, which signature algorithm and tier is mandated?",
+    choices: [
+      { id: "ecdsa-p384", label: "ECDSA P-384",       detail: "Classical — falls to Shor's." },
+      { id: "ml-dsa-44",  label: "ML-DSA-44",         detail: "Entry-level PQC tier." },
+      { id: "ml-dsa-65",  label: "ML-DSA-65",         detail: "Middle tier." },
+      { id: "ml-dsa-87",  label: "ML-DSA-87",         detail: "Highest tier." },
+    ],
+    correctId: "ml-dsa-87",
+    explanation: "CNSA 2.0 mandates ML-KEM-1024 for key exchange and ML-DSA-87 for signatures — the highest tiers of each. The full-migration deadline is 2035, with firmware exclusively PQC by 2030.",
+  },
+  {
+    id: "qubit-estimate",
+    title: "Collapsing qubit estimate",
+    icon: Cpu,
+    prompt: "In May 2025 Craig Gidney published a result that dramatically reduced the resource estimate for breaking RSA-2048. To roughly what number of noisy qubits?",
+    choices: [
+      { id: "20m",  label: "20 million",   detail: "The previous best estimate (2019)." },
+      { id: "1m",   label: "Under 1 million", detail: "Gidney 2025 — a 20× reduction in six years." },
+      { id: "100k", label: "Under 100,000",   detail: "Iceberg Quantum LDPC result (Feb 2026)." },
+      { id: "10k",  label: "Around 10,000",    detail: "Neutral-atom estimate (Mar 2026)." },
+    ],
+    correctId: "1m",
+    explanation: "Gidney's May 2025 result revised RSA-2048 from ~20M qubits down to under 1M — a 20× collapse in six years. Iceberg Quantum and the neutral-atom estimates went further still, into the hundreds-of-thousands and tens-of-thousands range respectively. The window keeps narrowing.",
+  },
+  {
+    id: "deadline-2030",
+    title: "What lands in 2030?",
+    icon: Calendar,
+    prompt: "Multiple regulators converge on 2030. For U.S. federal systems under NSM-10 and EO 14144, what specifically must be done by January 2030?",
+    choices: [
+      { id: "tls13",         label: "Federal TLS 1.3 with PQC-capable suites", detail: "EO 14144 baseline." },
+      { id: "full-migration", label: "Full migration of all systems",          detail: "That's 2035, not 2030." },
+      { id: "inventory",     label: "Crypto inventory only",                  detail: "Earlier requirement." },
+      { id: "research-only", label: "No mandate — research only",             detail: "Not the case." },
+    ],
+    correctId: "tls13",
+    explanation: "By January 2030, all federal TLS deployments must support TLS 1.3 with PQC-capable cipher suites. Firmware must be PQC-exclusive by 2030, all systems by 2033, and the full national-security migration target is 2035.",
+  },
 ];
 
 const STORAGE_KEY = "pq-atlas-challenges-v1";
@@ -139,7 +210,7 @@ export default function ChallengesPage() {
             Did you catch the math?
           </h1>
           <p className="text-base text-[var(--color-text-secondary)] max-w-2xl leading-relaxed mb-6">
-            Five short puzzles drawn from the halls and the atlas. Pick one answer per challenge.
+            Ten short puzzles drawn from the halls and the atlas. Pick one answer per challenge.
             Wrong picks reveal the explanation; right picks unlock the badge.
           </p>
 

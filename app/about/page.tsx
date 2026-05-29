@@ -23,7 +23,7 @@ export default function AboutPage() {
         <Section heading="Three ways to use it" icon={<GraduationCap size={18} />}>
           <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Walk the halls.</strong> Six halls, twenty-one exhibits, in order, with progress tracked in your browser.</p>
           <p className="mb-2"><strong className="text-[var(--color-text-primary)]">Open the atlas.</strong> Five interactive labs — algorithm cards, the impact map, Mosca&rsquo;s slider, the TLS handshake theater, and the collapsing threat timeline — each rendering one part of the story in a hands-on way.</p>
-          <p><strong className="text-[var(--color-text-primary)]">Take the challenges.</strong> Five short puzzles to see whether the math landed. Solved badges live in your browser.</p>
+          <p><strong className="text-[var(--color-text-primary)]">Take the challenges.</strong> Ten short puzzles to see whether the math landed. Solved badges live in your browser.</p>
         </Section>
 
         <Section heading="Where the facts come from" icon={<BookOpen size={18} />}>
@@ -68,7 +68,7 @@ export default function AboutPage() {
         </Section>
 
         <Section heading="Author">
-          <p className="mb-1">Paul Lester — IT Librarian &amp; Application Systems Analyst, Leon County Public Library, Tallahassee FL.</p>
+          <p className="mb-1">Paul Clark — IT Librarian &amp; Application Systems Analyst, Leon County Public Library, Tallahassee FL.</p>
           <p className="text-[var(--color-text-muted)] text-sm">paul@systemslibrarian.dev · github.com/systemslibrarian</p>
         </Section>
 

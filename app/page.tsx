@@ -173,7 +173,7 @@ export default function Home() {
       <footer className="border-t border-[var(--color-border-subtle)] py-10">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <p className="text-sm text-[var(--color-text-muted)] mb-2">
-            Paul Lester &bull; IT Librarian &amp; Application Systems Analyst &bull; Leon County Public Library
+            Paul Clark &bull; IT Librarian &amp; Application Systems Analyst &bull; Leon County Public Library
           </p>
           <p className="text-sm text-[var(--color-text-muted)] mb-3">
             paul@systemslibrarian.dev &bull; github.com/systemslibrarian

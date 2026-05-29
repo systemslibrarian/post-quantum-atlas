@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Lock, Map, GraduationCap, Atom, Sparkles, Menu, X, Search } from "lucide-react";
+import { Lock, Map as MapIcon, Compass, GraduationCap, Atom, Sparkles, Menu, X, Search } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -13,11 +13,12 @@ interface NavItem {
 }
 
 const items: NavItem[] = [
-  { label: "Entrance",   href: "/",            icon: Atom,          match: (p) => p === "/" },
+  { label: "Entrance",   href: "/",                  icon: Atom,          match: (p) => p === "/" },
   { label: "Halls",      href: "/learn/foundations", icon: GraduationCap, match: (p) => p.startsWith("/learn") },
-  { label: "Atlas",      href: "/atlas",       icon: Map,           match: (p) => p.startsWith("/atlas") },
-  { label: "Challenges", href: "/challenges",  icon: Sparkles,      match: (p) => p.startsWith("/challenges") },
-  { label: "About",      href: "/about",       icon: Lock,          match: (p) => p.startsWith("/about") },
+  { label: "Atlas",      href: "/atlas",             icon: MapIcon,       match: (p) => p.startsWith("/atlas") },
+  { label: "Challenges", href: "/challenges",        icon: Sparkles,      match: (p) => p.startsWith("/challenges") },
+  { label: "Map",        href: "/map",               icon: Compass,       match: (p) => p.startsWith("/map") },
+  { label: "About",      href: "/about",             icon: Lock,          match: (p) => p.startsWith("/about") },
 ];
 
 export default function MuseumNav() {

@@ -3,72 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, ChevronRight, BookOpen, Map, Layers, X, CornerDownLeft } from "lucide-react";
-import { modules } from "../lib/curriculum";
-import { algorithms } from "../lib/algorithms";
-import { labs } from "../lib/labs";
-
-interface Hit {
-  id: string;
-  kind: "module" | "lesson" | "lab" | "algorithm" | "page";
-  title: string;
-  subtitle?: string;
-  href: string;
-  searchKey: string;
-}
-
-function buildCorpus(): Hit[] {
-  const hits: Hit[] = [];
-
-  // Static top-level pages
-  hits.push({ id: "page:home", kind: "page", title: "Home", subtitle: "Module overview & both entry points", href: "/", searchKey: "home overview" });
-  hits.push({ id: "page:atlas", kind: "page", title: "Atlas", subtitle: "Interactive labs index", href: "/atlas", searchKey: "atlas labs map" });
-  hits.push({ id: "page:about", kind: "page", title: "About", subtitle: "How the project is built and sourced", href: "/about", searchKey: "about credits author" });
-
-  for (const m of modules) {
-    hits.push({
-      id: `module:${m.id}`,
-      kind: "module",
-      title: m.title,
-      subtitle: `Hall ${m.order} · ${m.lessons.length} exhibits`,
-      href: `/learn/${m.id}`,
-      searchKey: `${m.title} ${m.subtitle} ${m.description}`,
-    });
-    for (const l of m.lessons) {
-      hits.push({
-        id: `lesson:${m.id}/${l.id}`,
-        kind: "lesson",
-        title: l.title,
-        subtitle: `${m.title} · ${l.subtitle}`,
-        href: `/learn/${m.id}/${l.id}`,
-        searchKey: `${l.title} ${l.subtitle} ${l.keyTakeaways.join(" ")} ${m.title}`,
-      });
-    }
-  }
-
-  for (const a of algorithms) {
-    hits.push({
-      id: `algo:${a.id}`,
-      kind: "algorithm",
-      title: a.name,
-      subtitle: [a.aka, a.fips, a.coreMath].filter(Boolean).join(" · "),
-      href: "/atlas/toolkit",
-      searchKey: `${a.name} ${a.aka ?? ""} ${a.coreMath} ${a.family} ${a.fips ?? ""} ${a.deployment}`,
-    });
-  }
-
-  for (const l of Object.values(labs)) {
-    hits.push({
-      id: `lab:${l.id}`,
-      kind: "lab",
-      title: l.title,
-      subtitle: l.blurb,
-      href: l.href,
-      searchKey: `${l.title} ${l.blurb}`,
-    });
-  }
-
-  return hits;
-}
+import { corpus, rank, kindLabel, type Hit } from "../lib/search";
 
 const kindIcon = {
   module: BookOpen,
@@ -78,14 +13,6 @@ const kindIcon = {
   page: ChevronRight,
 } as const;
 
-const kindLabel = {
-  module: "Hall",
-  lesson: "Exhibit",
-  lab: "Lab",
-  algorithm: "Algorithm",
-  page: "Page",
-};
-
 export default function CommandPalette() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -94,7 +21,7 @@ export default function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const corpus = useMemo(buildCorpus, []);
+  const allHits = useMemo(corpus, []);
 
   // Global hotkey
   useEffect(() => {
@@ -129,25 +56,13 @@ export default function CommandPalette() {
   }, [open]);
 
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = query.trim();
     if (!q) {
       // Default selection: a curated overview
-      return corpus.filter(h => h.kind === "page" || h.kind === "lab").slice(0, 12);
+      return allHits.filter(h => h.kind === "page" || h.kind === "lab").slice(0, 12);
     }
-    const tokens = q.split(/\s+/);
-    const scored = corpus.map(h => {
-      const key = (h.title + " " + h.searchKey).toLowerCase();
-      let score = 0;
-      for (const t of tokens) {
-        if (!key.includes(t)) return { h, score: -1 };
-        if (h.title.toLowerCase().includes(t)) score += 5;
-        score += 1;
-      }
-      return { h, score };
-    }).filter(s => s.score >= 0);
-    scored.sort((a, b) => b.score - a.score);
-    return scored.slice(0, 20).map(s => s.h);
-  }, [query, corpus]);
+    return rank(q, 20);
+  }, [query, allHits]);
 
   // Clamp active
   useEffect(() => {
@@ -170,21 +85,7 @@ export default function CommandPalette() {
     }
   }
 
-  if (!open) {
-    return (
-      <button
-        onClick={() => setOpen(true)}
-        aria-label="Open command palette"
-        className="fixed bottom-4 right-4 z-40 hidden md:inline-flex items-center gap-2 px-3 py-2 rounded-full bg-[var(--color-surface-raised)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-mid)] shadow-lg backdrop-blur-md transition-colors"
-      >
-        <Search size={12} />
-        Search
-        <kbd className="ml-1 px-1.5 py-0.5 rounded bg-[var(--color-surface)] border border-[var(--color-border-subtle)] font-[family-name:var(--font-mono)] text-[10px]">
-          ⌘K
-        </kbd>
-      </button>
-    );
-  }
+  if (!open) return null; // Header has the Search button; no floating fallback.
 
   return (
     <div
